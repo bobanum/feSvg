@@ -1,0 +1,24 @@
+<svg width="512" height="512" version="1.1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+   <defs>
+      <filter id="a" x="-.091697" y="-.093284" width="1.1834" height="1.1866" color-interpolation-filters="sRGB">
+         <feGaussianBlur in="SourceAlpha" result="result0" stdDeviation="2.3"/>
+         <feMorphology in="SourceAlpha" radius="6.6" result="result1"/>
+         <feGaussianBlur in="result1" stdDeviation="8.9"/>
+         <feColorMatrix result="result91" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.3 0"/>
+         <feComposite in="result0" in2="result91" operator="out" result="result2"/>
+         <feGaussianBlur result="result4" stdDeviation="1.7"/>
+         <feDiffuseLighting surfaceScale="10">
+            <feDistantLight azimuth="225" elevation="45"/>
+         </feDiffuseLighting>
+         <feBlend in2="SourceGraphic" mode="multiply"/>
+         <feComposite in2="SourceAlpha" operator="in" result="result3"/>
+         <feSpecularLighting in="result4" specularExponent="17.9" surfaceScale="5">
+            <feDistantLight azimuth="225" elevation="45"/>
+         </feSpecularLighting>
+         <feComposite in2="result3" operator="atop"/>
+      </filter>
+   </defs>
+   <g>
+      <rect x="139.05" y="106.86" width="265.66" height="261.14" fill="#ff0" fill-rule="evenodd" filter="url(#a)" opacity=".5" stroke-linejoin="round" style="-inkscape-stroke:none"/>
+   </g>
+</svg>

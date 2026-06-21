@@ -1,0 +1,48 @@
+{
+  "name": "fesvg",
+  "version": "0.1.0",
+  "description": "Create stunning SVG filter effects with a visual node-based editor",
+  "keywords": [
+    "svg",
+    "filter",
+    "visual-editor",
+    "node-editor",
+    "graphics",
+    "image-effects",
+    "feBlend",
+    "feGaussianBlur",
+    "feColorMatrix"
+  ],
+  "homepage": "https://github.com/bobanum/feSvg#readme",
+  "bugs": {
+    "url": "https://github.com/bobanum/feSvg/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bobanum/feSvg.git"
+  },
+  "license": "MIT",
+  "author": "bobanum",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .js",
+    "format": "prettier --write \"src/**/*.{js,css,html}\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@svgdotjs/svg.js": "^3.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "vite": "^8.0.16"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

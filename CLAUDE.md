@@ -67,6 +67,7 @@ Exportation du code SVG du filtre créé, avec une interface de visualisation du
 - `<feTurbulence>`
 
 ## Codage
+- Utilisation de Vite pour la gestion du projet et des dépendances.
 - Utilisation de SVG.js pour la manipulation des éléments SVG et la création de l'interface d'édition.
 - Utilisation de HTML pour la création des panneaux flottants et de l'interface utilisateur.
 - Utilisation de CSS pour la création des panneaux flottants et de l'interface utilisateur.
@@ -84,3 +85,24 @@ Exportation du code SVG du filtre créé, avec une interface de visualisation du
   - Table "users" pour la gestion des utilisateurs (id, username, email, password_hash, etc.)
   - Table "filters" pour la gestion des filtres créés (id, user_id, name, description, svg_code, created_at, updated_at, etc.)
 - Utilisation de Git pour la gestion du code source et des versions.
+
+# Sérialisation des filtres
+- Les informations de graphes seront intégrés avec un XMLNS spécifique dans le code SVG, permettant de stocker les informations de connexions entre les composants, les paramètres spécifiques à chaque composant, etc.
+- Exemple de sérialisation :
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:feSvg="http://www.feSvg.com">
+  <filter id="myFilter" feSvg:type="custom" feSvg:name="My Custom Filter" feSvg:description="A custom filter created with feSvg" feSvg:createdAt="2024-06-01T12:00:00Z" feSvg:updatedAt="2024-06-01T12:00:00Z" feSvg:author="John Doe">
+    <feSvg:SourceAlpha result="SourceAlpha" x="0" y="0" />
+    <feGaussianBlur id="feGaussianBlur1" stdDeviation="5" feSvg:x="0" feSvg:y="0" result="blur-result" />
+    <feBlend id="feBlend1" mode="multiply" />
+    <feColorMatrix id="feColorMatrix1" type="matrix" values="..." />
+    <feComponentTransfer id="feComponentTransfer1">
+      <feFuncR type="linear" slope="1" intercept="0" />
+      <feFuncG type="linear" slope="1" intercept="0" />
+      <feFuncB type="linear" slope="1" intercept="0" />
+      <feFuncA type="linear" slope="1" intercept="0" />
+    </feComponentTransfer>
+    <feSvg:preview in="blur-result" x="0" y="0" width="200" height="200" />
+  </filter>
+</svg>
+```
