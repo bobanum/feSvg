@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>feSvg - Visual SVG Filter Editor</title>
+    <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+    <div id="app">
+        <header class="app-header">
+            <h1>feSvg</h1>
+            <div class="toolbar">
+                <button id="add-node-btn" class="btn-primary">+ Add Node</button>
+                <button id="clear-btn" class="btn-secondary">Clear All</button>
+            </div>
+        </header>
+        
+        <div id="editor-container" class="editor-container">
+            <!-- SVG layer for connections -->
+            <svg id="connections-svg" class="connections-layer">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                            refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="var(--color-connection)" />
+                    </marker>
+                </defs>
+            </svg>
+            
+            <!-- Nodes container -->
+            <div id="nodes-container" class="nodes-container"></div>
+        </div>
+        
+        <!-- Context menu for node type selection -->
+        <div id="node-menu" class="node-menu hidden">
+            <div class="menu-item" data-type="source">SourceGraphic</div>
+            <div class="menu-item" data-type="blur">Gaussian Blur</div>
+            <div class="menu-item" data-type="offset">Offset</div>
+            <div class="menu-item" data-type="blend">Blend</div>
+        </div>
+    </div>
+    
+    <script type="module" src="/src/index.js"></script>
+</body>
+</html>
