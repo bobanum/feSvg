@@ -132,8 +132,8 @@ button {
   z-index: 10;
 }
 
-/* Node */
-.node {
+/* Node - Web Component */
+filter-node {
   position: absolute;
   width: var(--node-width);
   background: var(--color-surface);
@@ -142,14 +142,15 @@ button {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   transition: box-shadow 0.2s ease;
+  display: block;
 }
 
-.node.selected {
+filter-node.selected {
   border-color: var(--color-primary);
   box-shadow: 0 4px 20px rgba(200, 100, 255, 0.4);
 }
 
-.node.dragging {
+filter-node.dragging {
   opacity: 0.8;
   cursor: grabbing;
 }

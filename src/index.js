@@ -1,3 +1,4 @@
+import './Node.js'; // Import to register custom element
 import { NodeEditor } from './NodeEditor.js';
 
 /**
@@ -18,9 +19,12 @@ class App {
     }
   }
 
-  start() {
+  async start() {
     console.log('🎨 feSvg - Visual SVG Filter Editor');
     console.log('Starting node editor...');
+
+    // Wait for custom element to be defined
+    await customElements.whenDefined('filter-node');
 
     // Initialize the node editor
     this.editor = new NodeEditor('nodes-container');

@@ -1,4 +1,4 @@
-import { Node } from './Node.js';
+import { FilterNode } from './Node.js';
 import { Connection } from './Connection.js';
 
 /**
@@ -88,11 +88,15 @@ export class NodeEditor {
    * Add a new node to the editor
    */
   addNode(type, x, y) {
-    const node = new Node(type, x, y);
-    this.nodes.set(node.id, node);
+    const node = document.createElement('filter-node');
     
+    // Add to DOM first (required for custom elements)
     const container = document.getElementById('nodes-container');
-    container.appendChild(node.element);
+    container.appendChild(node);
+    
+    // Then initialize
+    node.init(type, x, y);
+    this.nodes.set(node.id, node);
     
     return node;
   }
@@ -105,7 +109,7 @@ export class NodeEditor {
     if (!portDot.classList.contains('port-dot')) return;
 
     const portElement = portDot.parentElement;
-    const nodeElement = portDot.closest('.node');
+    const nodeElement = portDot.closest('filter-node');
     const node = this.nodes.get(nodeElement.id);
     const portId = portDot.dataset.port;
     const isOutput = portElement.classList.contains('port-output');
@@ -176,7 +180,7 @@ export class NodeEditor {
     const portDot = e.target;
     if (portDot.classList.contains('port-dot')) {
       const portElement = portDot.parentElement;
-      const nodeElement = portDot.closest('.node');
+      const nodeElement = portDot.closest('filter-node');
       const targetNode = this.nodes.get(nodeElement.id);
       const targetPortId = portDot.dataset.port;
       const isInput = portElement.classList.contains('port-input');
@@ -228,7 +232,7 @@ export class NodeEditor {
    * Delete selected nodes and connections
    */
   deleteSelected() {
-    const selectedNode = document.querySelector('.node.selected');
+    const selectedNode = document.querySelector('filter-node.selected');
     if (selectedNode) {
       const nodeId = selectedNode.id;
       const node = this.nodes.get(nodeId);
@@ -290,7 +294,7 @@ export class NodeEditor {
     this.nodes.forEach(node => {
       graph.nodes.push({
         id: node.id,
-        type: node.type,
+        type: node.filterType,
         x: node.x,
         y: node.y,
         params: node.params

@@ -1,29 +1,58 @@
 /**
- * Node class - Represents a filter node in the editor
+ * FilterNode - Web Component for filter nodes in the editor
  */
-export class Node {
+export class FilterNode extends HTMLElement {
   static idCounter = 0;
 
-  constructor(type, x, y) {
-    this.id = `node-${Node.idCounter++}`;
-    this.type = type;
-    this.x = x;
-    this.y = y;
+  constructor() {
+    super();
+    this.id = `node-${FilterNode.idCounter++}`;
+    this.filterType = '';
+    this.x = 0;
+    this.y = 0;
     this.inputs = [];
     this.outputs = [];
     this.params = {};
-    this.element = null;
+    this.name = '';
+    
+    this._isDragging = false;
+    this._dragStart = { x: 0, y: 0 };
+    this._initialPos = { x: 0, y: 0 };
+  }
+
+  /**
+   * Initialize the node with type and position
+   */
+  init(type, x, y) {
+    this.filterType = type;
+    this.x = x;
+    this.y = y;
     
     this.initializeByType();
-    this.createElement();
+    this.render();
+    this.updatePosition();
     this.attachEventListeners();
+    
+    return this;
+  }
+
+  connectedCallback() {
+    this.className = 'node';
+  }
+
+  /**
+   * Update the node position in the DOM
+   */
+  updatePosition() {
+    this.style.left = `${this.x}px`;
+    this.style.top = `${this.y}px`;
   }
 
   /**
    * Initialize node properties based on type
    */
   initializeByType() {
-    switch (this.type) {
+    switch (this.filterType) {
       case 'source':
         this.name = 'SourceGraphic';
         this.outputs = [{ id: 'out', name: 'result' }];
@@ -66,66 +95,36 @@ export class Node {
   }
 
   /**
-   * Create the DOM element for the node
+   * Render the node content
    */
-  createElement() {
-    const node = document.createElement('div');
-    node.className = 'node';
-    node.id = this.id;
-    node.style.left = `${this.x}px`;
-    node.style.top = `${this.y}px`;
-
-    // Header
-    const header = document.createElement('div');
-    header.className = 'node-header';
-    header.innerHTML = `
-      <span class="node-title">${this.name}</span>
-      <button class="node-menu-btn">⋮</button>
+  render() {
+    this.innerHTML = `
+      <div class="node-header">
+        <span class="node-title">${this.name}</span>
+        <button class="node-menu-btn">⋮</button>
+      </div>
+      <div class="node-body">
+        ${this.createParamsHTML()}
+      </div>
+      <div class="node-ports">
+        <div class="ports-left">
+          ${this.inputs.map(input => `
+            <div class="port port-input" data-port-id="${input.id}">
+              <div class="port-dot" data-port="${input.id}"></div>
+              <span>${input.name}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="ports-right">
+          ${this.outputs.map(output => `
+            <div class="port port-output" data-port-id="${output.id}">
+              <span>${output.name}</span>
+              <div class="port-dot" data-port="${output.id}"></div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
     `;
-    node.appendChild(header);
-
-    // Body with parameters
-    const body = document.createElement('div');
-    body.className = 'node-body';
-    body.innerHTML = this.createParamsHTML();
-    node.appendChild(body);
-
-    // Ports
-    const ports = document.createElement('div');
-    ports.className = 'node-ports';
-    
-    // Input ports
-    const portsLeft = document.createElement('div');
-    portsLeft.className = 'ports-left';
-    this.inputs.forEach(input => {
-      const port = document.createElement('div');
-      port.className = 'port port-input';
-      port.dataset.portId = input.id;
-      port.innerHTML = `
-        <div class="port-dot" data-port="${input.id}"></div>
-        <span>${input.name}</span>
-      `;
-      portsLeft.appendChild(port);
-    });
-    ports.appendChild(portsLeft);
-
-    // Output ports
-    const portsRight = document.createElement('div');
-    portsRight.className = 'ports-right';
-    this.outputs.forEach(output => {
-      const port = document.createElement('div');
-      port.className = 'port port-output';
-      port.dataset.portId = output.id;
-      port.innerHTML = `
-        <span>${output.name}</span>
-        <div class="port-dot" data-port="${output.id}"></div>
-      `;
-      portsRight.appendChild(port);
-    });
-    ports.appendChild(portsRight);
-
-    node.appendChild(ports);
-    this.element = node;
   }
 
   /**
@@ -165,53 +164,57 @@ export class Node {
    */
   attachEventListeners() {
     // Drag and drop
-    const header = this.element.querySelector('.node-header');
-    let isDragging = false;
-    let startX, startY, initialX, initialY;
+    const header = this.querySelector('.node-header');
 
-    header.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      this.element.classList.add('dragging');
-      startX = e.clientX;
-      startY = e.clientY;
-      initialX = this.x;
-      initialY = this.y;
+    const onMouseDown = (e) => {
+      this._isDragging = true;
+      this.classList.add('dragging');
+      this._dragStart.x = e.clientX;
+      this._dragStart.y = e.clientY;
+      this._initialPos.x = this.x;
+      this._initialPos.y = this.y;
       
       // Bring to front
-      this.element.style.zIndex = 100;
+      this.style.zIndex = '100';
       
       e.preventDefault();
-    });
+    };
 
-    document.addEventListener('mousemove', (e) => {
-      if (!isDragging) return;
+    const onMouseMove = (e) => {
+      if (!this._isDragging) return;
       
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
+      const dx = e.clientX - this._dragStart.x;
+      const dy = e.clientY - this._dragStart.y;
       
-      this.x = initialX + dx;
-      this.y = initialY + dy;
+      this.x = this._initialPos.x + dx;
+      this.y = this._initialPos.y + dy;
       
-      this.element.style.left = `${this.x}px`;
-      this.element.style.top = `${this.y}px`;
+      this.updatePosition();
       
       // Dispatch event for connection updates
-      this.element.dispatchEvent(new CustomEvent('node-moved', {
+      this.dispatchEvent(new CustomEvent('node-moved', {
         bubbles: true,
         detail: { nodeId: this.id }
       }));
-    });
+    };
 
-    document.addEventListener('mouseup', () => {
-      if (isDragging) {
-        isDragging = false;
-        this.element.classList.remove('dragging');
-        this.element.style.zIndex = '';
+    const onMouseUp = () => {
+      if (this._isDragging) {
+        this._isDragging = false;
+        this.classList.remove('dragging');
+        this.style.zIndex = '';
       }
-    });
+    };
+
+    header.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+
+    // Store handlers for cleanup if needed
+    this._eventHandlers = { onMouseMove, onMouseUp };
 
     // Parameter changes
-    const paramInputs = this.element.querySelectorAll('[data-param]');
+    const paramInputs = this.querySelectorAll('[data-param]');
     paramInputs.forEach(input => {
       input.addEventListener('input', (e) => {
         const paramName = e.target.dataset.param;
@@ -221,7 +224,7 @@ export class Node {
         this.params[paramName] = value;
         
         // Dispatch event for filter updates
-        this.element.dispatchEvent(new CustomEvent('param-changed', {
+        this.dispatchEvent(new CustomEvent('param-changed', {
           bubbles: true,
           detail: { nodeId: this.id, param: paramName, value }
         }));
@@ -229,13 +232,13 @@ export class Node {
     });
 
     // Node selection
-    this.element.addEventListener('click', (e) => {
+    this.addEventListener('click', (e) => {
       if (e.target.classList.contains('port-dot')) return;
       
-      document.querySelectorAll('.node.selected').forEach(n => {
-        if (n !== this.element) n.classList.remove('selected');
+      document.querySelectorAll('filter-node.selected').forEach(n => {
+        if (n !== this) n.classList.remove('selected');
       });
-      this.element.classList.add('selected');
+      this.classList.add('selected');
     });
   }
 
@@ -243,9 +246,7 @@ export class Node {
    * Get the position of a port in screen coordinates
    */
   getPortPosition(portId, isOutput = false) {
-    const portDot = this.element.querySelector(
-      `[data-port="${portId}"]`
-    );
+    const portDot = this.querySelector(`[data-port="${portId}"]`);
     
     if (!portDot) return null;
     
@@ -259,11 +260,19 @@ export class Node {
   }
 
   /**
-   * Remove the node from the DOM
+   * Cleanup when node is removed
    */
-  remove() {
-    if (this.element && this.element.parentNode) {
-      this.element.parentNode.removeChild(this.element);
+  disconnectedCallback() {
+    // Clean up event listeners if needed
+    if (this._eventHandlers) {
+      document.removeEventListener('mousemove', this._eventHandlers.onMouseMove);
+      document.removeEventListener('mouseup', this._eventHandlers.onMouseUp);
     }
   }
 }
+
+// Register the custom element only if not already defined
+if (!customElements.get('filter-node')) {
+  customElements.define('filter-node', FilterNode);
+}
+
