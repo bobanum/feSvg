@@ -38,6 +38,9 @@ export class FilterNode extends Node {
 
     connectedCallback() {
         this.shadowRoot.appendChild(this.dom.main.call(this));
+        this.appendChild(this.createParamsHTML());
+        this.shadowRoot.appendChild(this.dom.ports.call(this));
+
     }
     /**
      * Update the node position in the DOM
@@ -120,12 +123,14 @@ console.log(321);
                 input.value = value;
                 input.dataset.param = key;
                 input.step = 0.1;
+                input.size = 5;
                 paramGroup.appendChild(input);
             } else if (typeof value === 'string') {
                 let input = document.createElement('input');
                 input.type = 'text';
                 input.value = value;
                 input.dataset.param = key;
+                input.size = 5;
                 paramGroup.appendChild(input);
             }
             result.appendChild(paramGroup);

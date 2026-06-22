@@ -19,7 +19,6 @@ export class Node extends HTMLElement {
         this._isDragging = false;
         this._dragStart = { x: 0, y: 0 };
         this._initialPos = { x: 0, y: 0 };
-        console.log(Node.dom);
 
         this.dom = Object.fromEntries(Object.entries(Node.dom).map(([key, fn]) => [key, fn.bind(this)]));
         this.evt = Object.fromEntries(Object.entries(Node.evt).map(([key, fn]) => [key, fn.bind(this)]));
@@ -53,52 +52,6 @@ export class Node extends HTMLElement {
     }
 
     /**
-     * Initialize node properties based on type
-     */
-    initializeByType() {
-        switch (this.filterType) {
-            case 'source':
-                this.name = 'SourceGraphic';
-                this.outputs = [{ id: 'out', name: 'result' }];
-                break;
-
-            case 'blur':
-                this.name = 'Gaussian Blur';
-                this.inputs = [{ id: 'in', name: 'in' }];
-                this.outputs = [{ id: 'out', name: 'result' }];
-                this.params = {
-                    stdDeviation: 5
-                };
-                break;
-
-            case 'offset':
-                this.name = 'Offset';
-                this.inputs = [{ id: 'in', name: 'in' }];
-                this.outputs = [{ id: 'out', name: 'result' }];
-                this.params = {
-                    dx: 0,
-                    dy: 0
-                };
-                break;
-
-            case 'blend':
-                this.name = 'Blend';
-                this.inputs = [
-                    { id: 'in1', name: 'in' },
-                    { id: 'in2', name: 'in2' }
-                ];
-                this.outputs = [{ id: 'out', name: 'result' }];
-                this.params = {
-                    mode: 'normal'
-                };
-                break;
-
-            default:
-                this.name = 'Unknown';
-        }
-    }
-
-    /**
      * Get the position of a port in screen coordinates
      */
     getPortPosition(portId, isOutput = false) {
@@ -114,7 +67,11 @@ export class Node extends HTMLElement {
             y: rect.top + rect.height / 2 - editorRect.top
         };
     }
-
+    createSlot(name) {
+        const slot = document.createElement('slot');
+        if (name) slot.name = name;
+        return slot;
+    }
     static dom = {
         main: function () {
             const result = document.createDocumentFragment();
@@ -122,26 +79,27 @@ export class Node extends HTMLElement {
             style.rel = 'stylesheet';
             style.href = '/styles/node.css';
             result.appendChild(style);
-            const header = this.dom.header();
-            result.appendChild(header);
-            const body = document.createElement('div');
-            body.classList.add('node-body');
-            // body.innerHTML = this.createParamsHTML();
-            this.appendChild(this.createParamsHTML());
-            body.appendChild(document.createElement('slot'));
+            result.appendChild(this.dom.header());
+            const body = document.createElement('main');
+            body.appendChild(this.createSlot());
             result.appendChild(body);
-            const ports = document.createElement('div');
-            ports.classList.add('node-ports');
+            // result.appendChild(this.dom.ports());
+            result.appendChild(this.createSlot('ports'));
+            return result;
+        },
+        ports: function () {
+            const result = document.createElement('div');
+            result.classList.add('node-ports');
             const portsLeft = document.createElement('div');
             portsLeft.classList.add('ports-left');
             console.log(this.inputs, this.outputs);
-            
+
             this.inputs.forEach(input => {
                 const port = this.dom.port(input);
                 port.classList.add('port-input');
                 portsLeft.appendChild(port);
             });
-            ports.appendChild(portsLeft);
+            result.appendChild(portsLeft);
             const portsRight = document.createElement('div');
             portsRight.classList.add('ports-right');
             this.outputs.forEach(output => {
@@ -149,15 +107,11 @@ export class Node extends HTMLElement {
                 port.classList.add('port-output');
                 portsRight.appendChild(port);
             });
-            ports.appendChild(portsRight);
-            result.appendChild(ports);
+            result.appendChild(portsRight);
             return result;
         },
         header: function () {
-            console.log(this);
-
-            const header = document.createElement('div');
-            header.classList.add('node-header');
+            const header = document.createElement('header');
             const title = document.createElement('span');
             title.classList.add('node-title');
             title.textContent = this.name;
@@ -197,7 +151,6 @@ export class Node extends HTMLElement {
             this.classList.add('selected');
         },
         header_mouseDown: function (e) {
-            console.log("down");
             this._isDragging = true;
             this.classList.add('dragging');
             this._dragStart.x = e.clientX;

@@ -1,6 +1,7 @@
 @import './variables.css';
 @import './boilerplate.css';
 @import './interface.css';
+@import './params.css';
 
 /* Connection Line */
 .connection {

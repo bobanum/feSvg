@@ -24,6 +24,8 @@ export class NodeEditor {
     
     // Create an initial source node
     this.addNode('source', 100, 100);
+    this.addNode('blur', 400, 100);
+    this.addNode('blend', 700, 100);
   }
 
   /**
