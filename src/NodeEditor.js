@@ -1,4 +1,4 @@
-import { FilterNode } from './Node.js';
+import { FilterNode } from './FilterNode.js';
 import { Connection } from './Connection.js';
 
 /**
@@ -88,15 +88,16 @@ export class NodeEditor {
    * Add a new node to the editor
    */
   addNode(type, x, y) {
-    const node = document.createElement('filter-node');
+    // const node = document.createElement('filter-node');
+    const node = new FilterNode();
     
     // Add to DOM first (required for custom elements)
     const container = document.getElementById('nodes-container');
-    container.appendChild(node);
     
     // Then initialize
     node.init(type, x, y);
     this.nodes.set(node.id, node);
+    container.appendChild(node);
     
     return node;
   }

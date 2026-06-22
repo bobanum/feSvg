@@ -1,0 +1,27 @@
+/* CSS Variables - Colors in HSL */
+:root {
+  --hue-primary: 220;
+  --hue-accent: 280;
+  
+  --color-bg: hsl(var(--hue-primary), 15%, 12%);
+  --color-bg-light: hsl(var(--hue-primary), 15%, 18%);
+  --color-surface: hsl(var(--hue-primary), 12%, 22%);
+  --color-surface-hover: hsl(var(--hue-primary), 12%, 28%);
+  
+  --color-primary: hsl(var(--hue-accent), 70%, 60%);
+  --color-primary-hover: hsl(var(--hue-accent), 70%, 70%);
+  
+  --color-text: hsl(0, 0%, 95%);
+  --color-text-muted: hsl(0, 0%, 70%);
+  
+  --color-connection: hsl(var(--hue-accent), 60%, 55%);
+  --color-port-input: hsl(120, 60%, 55%);
+  --color-port-output: hsl(30, 80%, 60%);
+  
+  --color-border: hsl(var(--hue-primary), 10%, 30%);
+  
+  --node-width: 240px;
+  --port-size: 12px;
+  --spacing: 16px;
+  --radius: 8px;
+}

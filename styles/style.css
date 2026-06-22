@@ -1,0 +1,53 @@
+@import './variables.css';
+@import './boilerplate.css';
+@import './interface.css';
+
+/* Connection Line */
+.connection {
+    fill: none;
+    stroke: var(--color-connection);
+    stroke-width: 2;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.connection:hover,
+.connection.active {
+    opacity: 1;
+    stroke-width: 3;
+}
+
+/* Node Menu */
+.node-menu {
+    position: absolute;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    min-width: 180px;
+    &.hidden {
+        display: none;
+    }
+}
+
+.menu-item {
+    padding: 10px 14px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    border-bottom: 1px solid var(--color-border);
+    &:last-child {
+        border-bottom: none;
+    }
+    &:hover {
+        background: var(--color-surface-hover);
+    }
+}
+
+
+
+/* Utility */
+.hidden {
+    display: none;
+}
