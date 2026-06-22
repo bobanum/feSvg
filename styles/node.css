@@ -1,14 +1,18 @@
 /* Node - Web Component */
 :host {
+    --bg-color: hsl(240, 50%, 10%);
+    --border-color: hsl(from var(--bg-color) h s calc(l - 5));
+    --pad: 0.5em;
+    --radius: 0.5em;
     position: absolute;
     width: var(--node-width);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     overflow: hidden;
     transition: box-shadow 0.2s ease;
-    display: block;
+    display: grid;
 
     &.selected {
         border-color: var(--color-primary);
@@ -25,11 +29,11 @@
 /* Node Header */
 header {
     display: flex;
+    order: -1;
     justify-content: space-between;
     align-items: center;
-    padding: .25em .5em;
-    background: var(--color-bg-light);
-    border-bottom: 1px solid var(--color-border);
+    padding: .25em var(--pad);
+    background-color: hsl(from var(--bg-color) h s calc(l - 5));
     cursor: grab;
     user-select: none;
 
@@ -62,15 +66,22 @@ header {
 
 /* Node Body */
 main {
-    padding: .5em;
+    padding: var(--pad);
+    order: 2;
+    &:has(:not(:has-slotted)) {
+        display: none;
+    }
 }
 
 /* Ports */
 .node-ports {
     display: flex;
+    order: 1;
     justify-content: space-between;
     align-items: center;
-    padding: 0 .5em .5em;
+    padding: var(--pad);
+    background-color: #fff2;
+    background-color: hsl(from var(--bg-color) h s calc(l + 5));
 }
 
 .ports-left,
@@ -98,6 +109,7 @@ main {
 }
 
 .port-dot {
+    --port-size: .8em;
     width: var(--port-size);
     height: var(--port-size);
     border-radius: 50%;

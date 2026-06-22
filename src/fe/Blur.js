@@ -1,9 +1,9 @@
-import { Node } from "./Node.js";
+import { FilterNode } from "../FilterNode.js";
 
 /**
- * FilterNode - Web Component for filter nodes in the editor
+ * BlurFilterNode - Web Component for blur filter nodes in the editor
  */
-export class FilterNode extends Node {
+export class Blur extends FilterNode {
     static idCounter = 0;
 
     constructor() {
@@ -120,4 +120,4 @@ export class FilterNode extends Node {
     }
 }
 
-FilterNode.register('filter-node');
+Blur.register('blur-filter-node');

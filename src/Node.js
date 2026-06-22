@@ -24,23 +24,11 @@ export class Node extends HTMLElement {
         this.evt = Object.fromEntries(Object.entries(Node.evt).map(([key, fn]) => [key, fn.bind(this)]));
     }
 
-    /**
-     * Initialize the node with type and position
-     */
-    init(type, x, y) {
-        this.filterType = type;
-        this.x = x;
-        this.y = y;
-
-        this.initializeByType();
-        this.render();
-        this.updatePosition();
-
-        return this;
-    }
-
     connectedCallback() {
-        this.className = 'node';
+        if (this.dom.main) {
+            this.shadowRoot.appendChild(this.dom.main());
+        }
+        this.classList.add('node');
     }
 
     /**

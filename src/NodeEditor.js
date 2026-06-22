@@ -1,5 +1,6 @@
 import { FilterNode } from './FilterNode.js';
 import { Connection } from './Connection.js';
+import * as Fe from './fe/index.js';
 
 /**
  * NodeEditor class - Main controller for the node-based editor
@@ -9,10 +10,10 @@ export class NodeEditor {
     this.container = document.getElementById(containerId);
     this.nodes = new Map();
     this.connections = new Map();
-    
+
     this.connectionStart = null; // For tracking connection creation
     this.tempConnection = null;   // Temporary visual connection while dragging
-    
+
     this.init();
   }
 
@@ -21,7 +22,7 @@ export class NodeEditor {
    */
   init() {
     this.setupEventListeners();
-    
+
     // Create an initial source node
     this.addNode('source', 100, 100);
     this.addNode('blur', 400, 100);
@@ -35,7 +36,7 @@ export class NodeEditor {
     // Add node button
     const addBtn = document.getElementById('add-node-btn');
     const nodeMenu = document.getElementById('node-menu');
-    
+
     addBtn.addEventListener('click', (e) => {
       nodeMenu.style.left = `${e.clientX}px`;
       nodeMenu.style.top = `${e.clientY}px`;
@@ -90,17 +91,20 @@ export class NodeEditor {
    * Add a new node to the editor
    */
   addNode(type, x, y) {
-    // const node = document.createElement('filter-node');
-    const node = new FilterNode();
-    
     // Add to DOM first (required for custom elements)
     const container = document.getElementById('nodes-container');
-    
+    let node;
+    if (type === "blur") {
+      node = document.createElement('blur-filter-node');
+    } else {
+      node = new FilterNode();
+    }
+
     // Then initialize
     node.init(type, x, y);
     this.nodes.set(node.id, node);
     container.appendChild(node);
-    
+
     return node;
   }
 
@@ -157,7 +161,7 @@ export class NodeEditor {
     // Draw temporary connection
     const dx = end.x - start.x;
     const offset = Math.abs(dx) * 0.5;
-    
+
     const pathData = `
       M ${start.x} ${start.y}
       C ${start.x + offset} ${start.y},
@@ -215,7 +219,7 @@ export class NodeEditor {
 
     const connection = new Connection(sourceNode, sourcePort, targetNode, targetPort);
     this.connections.set(connection.id, connection);
-    
+
     console.log(`Connected ${sourceNode.name}.${sourcePort} -> ${targetNode.name}.${targetPort}`);
     return connection;
   }
@@ -239,7 +243,7 @@ export class NodeEditor {
     if (selectedNode) {
       const nodeId = selectedNode.id;
       const node = this.nodes.get(nodeId);
-      
+
       // Remove all connections involving this node
       const connectionsToRemove = [];
       this.connections.forEach((connection, id) => {
@@ -247,13 +251,13 @@ export class NodeEditor {
           connectionsToRemove.push(id);
         }
       });
-      
+
       connectionsToRemove.forEach(id => {
         const connection = this.connections.get(id);
         connection.remove();
         this.connections.delete(id);
       });
-      
+
       // Remove node
       node.remove();
       this.nodes.delete(nodeId);
@@ -277,10 +281,10 @@ export class NodeEditor {
   clear() {
     this.connections.forEach(connection => connection.remove());
     this.connections.clear();
-    
+
     this.nodes.forEach(node => node.remove());
     this.nodes.clear();
-    
+
     // Add back a source node
     this.addNode('source', 100, 100);
   }
