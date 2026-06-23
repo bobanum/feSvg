@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="240" height="240" version="1.1" xmlns="http://www.w3.org/2000/svg">
+   <path id="path" d="m30.93 122.8c69.02-160.3 108.1 173.5 173.1 1.784" style="fill:none;stroke-linecap:round;stroke:#800000">
+      <animate attributeName="d" dur="2s" fill="freeze" to="m30.93 122.8c69.02-160.3 108.1 -173.5 273.1 1.784" repeatCount="indefinite"/>
+   </path>
+   <circle cx="0" cy="0" r="6.245" style="fill-opacity:.266;fill-rule:evenodd;stroke-linecap:round;stroke:#800000">
+      <animateMotion rotate="auto" dur="2000s" begin="-1000s" end="1ms" fill="freeze" values=".5" repeatCount="indefinite">
+         <mpath xlink:href="#path" />
+      </animateMotion>
+   </circle>
+</svg>

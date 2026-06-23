@@ -3,29 +3,26 @@ import { Component } from "../Component.js";
 export class Param extends Component {
 	constructor(name, label, value) {
 		super();
+		this.internals_ = this.attachInternals();
 		this.name = name;
 		this.label = label;
 		this.value = value;
 	}
 	static dom = {
 		style: function () {
-			const result = document.createElement('style');
-			result.textContent = `
-			:host {
-				display: grid;
-				grid-template: subgrid / subgrid;
-				grid-column: span 2;
-			}
-			`;
+			const result = document.createElement('link');
+			result.rel = 'stylesheet';
+			result.href = '/css/params.css';
 			return result;
 		},
-		main: function (input) {
+		main: function () {
 			let result = document.createDocumentFragment();
 			result.appendChild(Param.dom.style());
 			let label = document.createElement('label');
 			label.textContent = this.label;
 			result.appendChild(label);
-			result.appendChild(input);
+
+			result.appendChild(this.createSlot());
 			return result;
 		}
 	};

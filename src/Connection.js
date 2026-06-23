@@ -24,7 +24,8 @@ export class Connection {
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path.classList.add('connection');
     path.id = this.id;
-    path.setAttribute('marker-end', 'url(#arrowhead)');
+    path.setAttribute('marker-start', 'url(#connection-end)');
+    path.setAttribute('marker-end', 'url(#connection-end)');
     
     // Add click handler for selection/deletion
     path.addEventListener('click', (e) => {
@@ -44,13 +45,13 @@ export class Connection {
    */
   updatePortStates() {
     // Source port
-    const sourceDot = this.sourceNode.element.querySelector(
+    const sourceDot = this.sourceNode.shadowRoot?.querySelector(
       `[data-port="${this.sourcePort}"]`
     );
     if (sourceDot) sourceDot.classList.add('connected');
 
     // Target port
-    const targetDot = this.targetNode.element.querySelector(
+    const targetDot = this.targetNode.shadowRoot?.querySelector(
       `[data-port="${this.targetPort}"]`
     );
     if (targetDot) targetDot.classList.add('connected');
@@ -99,12 +100,12 @@ export class Connection {
    */
   remove() {
     // Remove connected state from ports
-    const sourceDot = this.sourceNode.element.querySelector(
+    const sourceDot = this.sourceNode.shadowRoot?.querySelector(
       `[data-port="${this.sourcePort}"]`
     );
     if (sourceDot) sourceDot.classList.remove('connected');
 
-    const targetDot = this.targetNode.element.querySelector(
+    const targetDot = this.targetNode.shadowRoot?.querySelector(
       `[data-port="${this.targetPort}"]`
     );
     if (targetDot) targetDot.classList.remove('connected');

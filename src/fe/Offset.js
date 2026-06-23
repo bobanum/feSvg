@@ -2,18 +2,19 @@ import { FilterNode } from "../FilterNode.js";
 import * as Params from "../params/index.js";
 
 /**
- * BlurFilterNode - Web Component for blur filter nodes in the editor
+ * OffsetFilterNode - Web Component for offset filter nodes in the editor
  */
-export class Blur extends FilterNode {
+export class Offset extends FilterNode {
     static idCounter = 0;
 
     constructor() {
         super();
-        this.name = 'Gaussian Blur';
+        this.name = 'Offset';
         this.inputs = { in: 'in' };
         this.outputs = { result: 'result' };
         this.params = {
-            stdDeviation: 5
+            dx: 0,
+            dy: 0
         };
     }
 
@@ -48,16 +49,19 @@ export class Blur extends FilterNode {
         const result = document.createElement('fieldset');
         result.classList.add('node-params');
 
-        let stdDeviationParam = new Params.Number('stdDeviation', 'Standard Deviation', this.params.stdDeviation, 0.1);
-        result.appendChild(stdDeviationParam);
-        
+        let dX = new Params.Number('dx', 'Delta X', this.params.dx, 1);
+        result.appendChild(dX);
+
+        let dY = new Params.Number('dy', 'Delta Y', this.params.dy, 1);
+        result.appendChild(dY);
+
         result.addEventListener('input', (event) => {
             console.log(event);
-            this.params.stdDeviation = event.target.value;
+            this.params.dx = event.target.value;
         });
 
         return result;
     }
 }
 
-Blur.register('blur-filter-node');
+Offset.register('offset-filter-node');

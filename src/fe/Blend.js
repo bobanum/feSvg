@@ -2,19 +2,16 @@ import { FilterNode } from "../FilterNode.js";
 import * as Params from "../params/index.js";
 
 /**
- * BlurFilterNode - Web Component for blur filter nodes in the editor
+ * BlendFilterNode - Web Component for blend filter nodes in the editor
  */
-export class Blur extends FilterNode {
+export class Blend extends FilterNode {
     static idCounter = 0;
 
     constructor() {
         super();
-        this.name = 'Gaussian Blur';
-        this.inputs = { in: 'in' };
+        this.name = 'Blend';
+        this.inputs = { in: 'in', in2: 'in2' };
         this.outputs = { result: 'result' };
-        this.params = {
-            stdDeviation: 5
-        };
     }
 
     /**
@@ -24,6 +21,9 @@ export class Blur extends FilterNode {
         this.x = x;
         this.y = y;
 
+        this.params = {
+            stdDeviation: 5
+        };
         this.updatePosition();
 
         return this;
@@ -60,4 +60,4 @@ export class Blur extends FilterNode {
     }
 }
 
-Blur.register('blur-filter-node');
+Blend.register('blend-filter-node');

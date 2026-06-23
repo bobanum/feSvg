@@ -1,0 +1,27 @@
+:host {
+    display: grid;
+    grid-template: subgrid / subgrid;
+    grid-column: span 2;
+    align-items: center;
+    
+}
+label {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+::slotted(input) {
+    padding: 6px 8px !important;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: .25em;
+    color: var(--color-text);
+    font-size: 0.875rem;
+
+    &:focus {
+        outline: none;
+        border-color: var(--color-primary);
+    }
+}

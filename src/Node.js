@@ -6,13 +6,13 @@ import { Component } from "./Component.js";
 export class Node extends Component {
     static idCounter = 0;
 
-    constructor() {
+    constructor(x = 0, y = 0, inputs = { in: 'in' }, outputs = { result: 'result' }) {
         super();
         this.filterType = '';
-        this.x = 0;
-        this.y = 0;
-        this.inputs = [];
-        this.outputs = [];
+        this.x = x;
+        this.y = y;
+        this.inputs = inputs;
+        this.outputs = outputs;
         this.params = {};
         this.name = '';
 
@@ -24,6 +24,9 @@ export class Node extends Component {
     }
 
     connectedCallback() {
+        if (!this.id) {
+            this.id = `node-${Node.idCounter++}`;
+        }
         if (this.dom.main) {
             this.shadowRoot.appendChild(this.dom.main());
         }
@@ -42,7 +45,7 @@ export class Node extends Component {
      * Get the position of a port in screen coordinates
      */
     getPortPosition(portId, isOutput = false) {
-        const portDot = this.querySelector(`[data-port="${portId}"]`);
+        const portDot = this.shadowRoot?.querySelector(`[data-port="${portId}"]`);
 
         if (!portDot) return null;
 
@@ -54,17 +57,12 @@ export class Node extends Component {
             y: rect.top + rect.height / 2 - editorRect.top
         };
     }
-    createSlot(name) {
-        const slot = document.createElement('slot');
-        if (name) slot.name = name;
-        return slot;
-    }
     static dom = {
         main: function () {
             const result = document.createDocumentFragment();
             const style = document.createElement('link');
             style.rel = 'stylesheet';
-            style.href = '/styles/node.css';
+            style.href = '/css/node.css';
             result.appendChild(style);
             result.appendChild(this.dom.header());
             const body = document.createElement('main');
@@ -81,18 +79,17 @@ export class Node extends Component {
             result.classList.add('ports');
             const portsLeft = document.createElement('div');
             portsLeft.classList.add('ports-left');
-            console.log(this.inputs, this.outputs);
 
-            this.inputs.forEach(input => {
-                const port = this.dom.port(input);
+            Object.entries(this.inputs).forEach(([id, name]) => {
+                const port = this.dom.port(id, name);
                 port.classList.add('input');
                 portsLeft.appendChild(port);
             });
             result.appendChild(portsLeft);
             const portsRight = document.createElement('div');
             portsRight.classList.add('ports-right');
-            this.outputs.forEach(output => {
-                const port = this.dom.port(output);
+            Object.entries(this.outputs).forEach(([id, name]) => {
+                const port = this.dom.port(id, name);
                 port.classList.add('output');
                 portsRight.appendChild(port);
             });
@@ -109,20 +106,19 @@ export class Node extends Component {
             menuBtn.textContent = '⋮';
             header.appendChild(title);
             header.appendChild(menuBtn);
-            console.log(this);
 
             header.addEventListener('mousedown', this.evt.header_mouseDown.bind(this));
             return header;
         },
-        port: function (port) {
+        port: function (id, name) {
             const result = document.createElement('div');
             result.classList.add('port');
-            result.dataset.portId = port.id;
+            result.dataset.portId = id;
             const label = document.createElement('span');
-            label.textContent = port.name;
+            label.textContent = name;
             const portDot = document.createElement('div');
             portDot.classList.add('dot');
-            portDot.dataset.port = port.id;
+            portDot.dataset.port = id;
             result.appendChild(label);
             result.appendChild(portDot);
             return result;
@@ -163,7 +159,7 @@ export class Node extends Component {
             this.y = this._initialPos.y + dy;
             this.updatePosition();
             // Dispatch event for connection updates
-            this.dispatchEvent(new CustomEvent('moved', {
+            this.dispatchEvent(new CustomEvent('node-moved', {
                 bubbles: true,
                 detail: { nodeId: this.id }
             }));

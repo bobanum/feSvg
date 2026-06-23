@@ -1,4 +1,5 @@
 import { Node } from "./Node.js";
+import { Preview } from "./Preview.js";
 
 /**
  * FilterNode - Web Component for filter nodes in the editor
@@ -6,8 +7,9 @@ import { Node } from "./Node.js";
 export class FilterNode extends Node {
     static idCounter = 0;
 
-    constructor() {
-        super();
+    constructor(x, y, inputs = { in: 'in' }, outputs = { result: 'result' }) {
+        super(x, y, inputs, outputs);
+        this.adoptFunctions({ dom: Node.dom });
     }
 
     /**
@@ -27,6 +29,8 @@ export class FilterNode extends Node {
     connectedCallback() {
         super.connectedCallback();
         this.appendChild(this.createParamsHTML());
+        this.shadowRoot.appendChild(new Preview());
+
         this.shadowRoot.appendChild(this.dom.ports());
 
     }
@@ -35,8 +39,6 @@ export class FilterNode extends Node {
      * Initialize node properties based on type
      */
     initializeByType() {
-        console.log(123);
-
         switch (this.filterType) {
             case 'source':
                 this.name = 'SourceGraphic';

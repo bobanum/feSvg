@@ -1,14 +1,13 @@
 @import './variables.css';
 @import './boilerplate.css';
 @import './interface.css';
-@import './params.css';
 
 /* Connection Line */
 .connection {
     fill: none;
     stroke: var(--color-connection);
     stroke-width: 2;
-    opacity: 0.6;
+    /* opacity: 0.6; */
     transition: opacity 0.2s ease;
 }
 

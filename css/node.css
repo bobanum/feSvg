@@ -154,3 +154,26 @@ main {
         background: currentColor;
     }
 }
+.preview, node-preview {
+    --c1: #fff3;
+    --c2: #0003;
+    background-color: #fff;
+    background-image: conic-gradient(var(--c1) 0.25turn, var(--c2) 0.25turn 0.5turn, var(--c1) 0.5turn 0.75turn, var(--c2) 0.75turn);
+    aspect-ratio: 1 / 1;
+    padding: 12px;
+    margin: 12px;
+    order: 100;
+    background-size: 2em 2em;
+    background-position: center;
+    svg {
+        filter: url(index.html#glow);
+    }
+}
+
+::slotted(.node-params) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .25em .5em;
+    align-items: center;
+    border: none;
+}

@@ -24,9 +24,10 @@ export class NodeEditor {
         this.setupEventListeners();
 
         // Create an initial source node
-        this.addNode('source', 100, 100);
-        this.addNode('blur', 400, 100);
-        this.addNode('blend', 700, 100);
+        this.addNode(document.createElement('source-node'), 100, 100);
+        this.addNode(document.createElement('blur-filter-node'), 400, 100);
+        this.addNode(document.createElement('offset-filter-node'), 700, 100);
+        this.addNode(document.createElement('blend-filter-node'), 1000, 100);
     }
 
     /**
@@ -90,21 +91,18 @@ export class NodeEditor {
     /**
      * Add a new node to the editor
      */
-    addNode(type, x, y) {
+    addNode(node, x, y) {
         // Add to DOM first (required for custom elements)
         const container = document.getElementById('nodes-container');
-        let node;
-        if (type === "blur") {
-            node = document.createElement('blur-filter-node');
-            node.init(x, y);
-        } else {
+        if (typeof node === 'string') {
             node = new FilterNode();
             // Then initialize
-            node.init(type, x, y);
+            node.init(node, x, y);
         }
 
-        // this.nodes.set(node.id, node);
+        node.init(x, y);
         container.appendChild(node);
+        this.nodes.set(node.id, node);
 
         return node;
     }
@@ -113,12 +111,15 @@ export class NodeEditor {
      * Handle mouse down on a port (start connection)
      */
     handlePortMouseDown(e) {
-        const portDot = e.target;
-        if (!portDot.classList.contains('dot')) return;
+        const portDot = e.composedPath().find(target => target instanceof HTMLElement && target.classList?.contains('dot'));
+        if (!portDot) return;
 
-        const portElement = portDot.parentElement;
-        const nodeElement = portDot.closest('filter-node');
+        const portElement = e.composedPath().find(target => target instanceof HTMLElement && target.classList?.contains('port'));
+        const nodeElement = e.composedPath().find(target => target instanceof HTMLElement && target.classList?.contains('node'));
+        if (!portElement || !nodeElement) return;
+
         const node = this.nodes.get(nodeElement.id);
+        if (!node) return;
         const portId = portDot.dataset.port;
         const isOutput = portElement.classList.contains('output');
 
@@ -185,11 +186,20 @@ export class NodeEditor {
             this.tempConnection = null;
         }
 
-        const portDot = e.target;
-        if (portDot.classList.contains('dot')) {
-            const portElement = portDot.parentElement;
-            const nodeElement = portDot.closest('filter-node');
+        const portDot = e.composedPath().find(target => target instanceof HTMLElement && target.classList?.contains('dot'));
+        if (portDot) {
+            const portElement = e.composedPath().find(target => target instanceof HTMLElement && target.classList?.contains('port'));
+            const nodeElement = e.composedPath().find(target => target instanceof HTMLElement && target.classList?.contains('node'));
+            if (!portElement || !nodeElement) {
+                this.connectionStart = null;
+                return;
+            }
+
             const targetNode = this.nodes.get(nodeElement.id);
+            if (!targetNode) {
+                this.connectionStart = null;
+                return;
+            }
             const targetPortId = portDot.dataset.port;
             const isInput = portElement.classList.contains('input');
 

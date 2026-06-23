@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>feSvg - Visual SVG Filter Editor</title>
-    <link rel="stylesheet" href="/styles/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 </head>
+
 <body>
     <div id="app">
         <header class="app-header">
@@ -16,22 +18,36 @@
                 <button id="clear-btn" class="btn-secondary">Clear All</button>
             </div>
         </header>
-        
+
         <div id="editor-container" class="editor-container">
             <!-- SVG layer for connections -->
             <svg id="connections-svg" class="connections-layer">
                 <defs>
-                    <marker id="arrowhead" markerWidth="10" markerHeight="7" 
-                            refX="9" refY="3.5" orient="auto">
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                        <feMerge>
+                            <feMergeNode in="coloredBlur" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
                         <polygon points="0 0, 10 3.5, 0 7" fill="var(--color-connection)" />
                     </marker>
+                    <marker id="connection-end" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                        <circle cx="5" cy="5" r="2" fill="var(--color-connection)" />
+                    </marker>
+                    <g id="preview-group">
+                        <symbol id="preview-logo" viewbox="0 0 128 128">
+                            <path d="m64 0a64 64 0 0 0-64 64 64 64 0 0 0 17.21 43.66v-57.44c-3e-5 -17.67 14.33-32 32-32 13.95-2.6e-5 25.82 8.927 30.2 21.38-4.816 0.2447-9.532 1.467-13.86 3.591-2.724-6.322-9.013-10.75-16.33-10.75-9.818-1.8e-5 -17.78 7.959-17.78 17.78v17.78h14.94c-0.9525 4.689-0.9525 9.533 0 14.22h-14.94v36.87a64 64 0 0 0 32.57 8.907 64 64 0 0 0 64-64 64 64 0 0 0-64-64zm17.21 43.11c17.67 0 32 14.33 32 32 7e-5 2.393-0.2682 4.778-0.7999 7.111h-43.52c-1.21-2.092-1.903-4.521-1.903-7.111 0-2.59 0.6927-5.019 1.903-7.111h28.61c-2.828-6.479-9.225-10.67-16.29-10.67-9.818 0-17.78 7.959-17.78 17.78 0 9.818 7.959 17.78 17.78 17.78 5.596 0 10.86-2.635 14.22-7.111h15.95c-4.52 12.79-16.61 21.33-30.17 21.33-17.67 0-32-14.33-32-32 0-17.67 14.33-32 32-32z" style="fill:#277337" />
+                        </symbol>
+                    </g>
                 </defs>
             </svg>
-            
+
             <!-- Nodes container -->
             <div id="nodes-container" class="nodes-container"></div>
         </div>
-        
+
         <!-- Context menu for node type selection -->
         <div id="node-menu" class="node-menu hidden">
             <div class="menu-item" data-type="source">SourceGraphic</div>
@@ -40,7 +56,8 @@
             <div class="menu-item" data-type="blend">Blend</div>
         </div>
     </div>
-    
+
     <script type="module" src="/src/index.js"></script>
 </body>
+
 </html>
