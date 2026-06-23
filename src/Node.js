@@ -1,13 +1,13 @@
+import { Component } from "./Component.js";
+
 /**
  * FilterNode - Web Component for filter nodes in the editor
  */
-export class Node extends HTMLElement {
+export class Node extends Component {
     static idCounter = 0;
 
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
-        this.id = `node-${this.constructor.idCounter++}`;
         this.filterType = '';
         this.x = 0;
         this.y = 0;
@@ -20,8 +20,7 @@ export class Node extends HTMLElement {
         this._dragStart = { x: 0, y: 0 };
         this._initialPos = { x: 0, y: 0 };
 
-        this.dom = Object.fromEntries(Object.entries(Node.dom).map(([key, fn]) => [key, fn.bind(this)]));
-        this.evt = Object.fromEntries(Object.entries(Node.evt).map(([key, fn]) => [key, fn.bind(this)]));
+        this.adoptFunctions({dom: Node.dom, evt: Node.evt});
     }
 
     connectedCallback() {
@@ -71,20 +70,22 @@ export class Node extends HTMLElement {
             const body = document.createElement('main');
             body.appendChild(this.createSlot());
             result.appendChild(body);
-            // result.appendChild(this.dom.ports());
-            result.appendChild(this.createSlot('ports'));
+            // let handle = document.createElement('img');
+            // handle.src = '/img/handle2.svg';
+            // handle.classList.add('handle');
+            // result.appendChild(handle);
             return result;
         },
         ports: function () {
             const result = document.createElement('div');
-            result.classList.add('node-ports');
+            result.classList.add('ports');
             const portsLeft = document.createElement('div');
             portsLeft.classList.add('ports-left');
             console.log(this.inputs, this.outputs);
 
             this.inputs.forEach(input => {
                 const port = this.dom.port(input);
-                port.classList.add('port-input');
+                port.classList.add('input');
                 portsLeft.appendChild(port);
             });
             result.appendChild(portsLeft);
@@ -92,7 +93,7 @@ export class Node extends HTMLElement {
             portsRight.classList.add('ports-right');
             this.outputs.forEach(output => {
                 const port = this.dom.port(output);
-                port.classList.add('port-output');
+                port.classList.add('output');
                 portsRight.appendChild(port);
             });
             result.appendChild(portsRight);
@@ -101,10 +102,10 @@ export class Node extends HTMLElement {
         header: function () {
             const header = document.createElement('header');
             const title = document.createElement('span');
-            title.classList.add('node-title');
+            title.classList.add('title');
             title.textContent = this.name;
             const menuBtn = document.createElement('button');
-            menuBtn.classList.add('node-menu-btn');
+            menuBtn.classList.add('menu-btn');
             menuBtn.textContent = '⋮';
             header.appendChild(title);
             header.appendChild(menuBtn);
@@ -120,7 +121,7 @@ export class Node extends HTMLElement {
             const label = document.createElement('span');
             label.textContent = port.name;
             const portDot = document.createElement('div');
-            portDot.classList.add('port-dot');
+            portDot.classList.add('dot');
             portDot.dataset.port = port.id;
             result.appendChild(label);
             result.appendChild(portDot);
@@ -131,7 +132,7 @@ export class Node extends HTMLElement {
 
         // Node selection
         click: function (e) {
-            if (e.target.classList.contains('port-dot')) return;
+            if (e.target.classList.contains('dot')) return;
 
             document.querySelectorAll('filter-node.selected').forEach(n => {
                 if (n !== this) n.classList.remove('selected');
@@ -162,7 +163,7 @@ export class Node extends HTMLElement {
             this.y = this._initialPos.y + dy;
             this.updatePosition();
             // Dispatch event for connection updates
-            this.dispatchEvent(new CustomEvent('node-moved', {
+            this.dispatchEvent(new CustomEvent('moved', {
                 bubbles: true,
                 detail: { nodeId: this.id }
             }));
@@ -177,13 +178,4 @@ export class Node extends HTMLElement {
             }
         },
     };
-
-    static toKebabCase(str) {
-        return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-    }
-
-    static register(tag) {
-        this.tag = tag || `${this.toKebabCase(this.name)}`;
-        customElements.define(this.tag, this);
-    }
 }

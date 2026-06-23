@@ -20,8 +20,8 @@ class App {
   }
 
   async start() {
-    console.log('🎨 feSvg - Visual SVG Filter Editor');
-    console.log('Starting node editor...');
+    // console.log('🎨 feSvg - Visual SVG Filter Editor');
+    // console.log('Starting node editor...');
 
     // Wait for custom element to be defined
     await customElements.whenDefined('filter-node');
@@ -32,13 +32,13 @@ class App {
     // Expose editor to window for debugging
     window.editor = this.editor;
 
-    console.log('✅ Editor ready!');
-    console.log('💡 Tips:');
-    console.log('  - Drag nodes by their header');
-    console.log('  - Drag from output ports (right) to input ports (left) to create connections');
-    console.log('  - Click nodes or connections to select them');
-    console.log('  - Press Delete or Backspace to remove selected items');
-    console.log('  - Use editor.exportGraph() in console to export current graph');
+    // console.log('✅ Editor ready!');
+    // console.log('💡 Tips:');
+    // console.log('  - Drag nodes by their header');
+    // console.log('  - Drag from output ports (right) to input ports (left) to create connections');
+    // console.log('  - Click nodes or connections to select them');
+    // console.log('  - Press Delete or Backspace to remove selected items');
+    // console.log('  - Use editor.exportGraph() in console to export current graph');
   }
 }
 

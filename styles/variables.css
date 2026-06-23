@@ -15,13 +15,13 @@
   --color-text-muted: hsl(0, 0%, 70%);
   
   --color-connection: hsl(var(--hue-accent), 60%, 55%);
-  --color-port-input: hsl(120, 60%, 55%);
-  --color-port-output: hsl(30, 80%, 60%);
+  --color-input: hsl(120, 60%, 55%);
+  --color-output: hsl(30, 80%, 60%);
   
   --color-border: hsl(var(--hue-primary), 10%, 30%);
   
   --node-width: 240px;
-  --port-size: 12px;
+  --size: 12px;
   --spacing: 16px;
   --radius: 8px;
 }

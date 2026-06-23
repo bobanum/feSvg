@@ -87,7 +87,6 @@ export class FilterNode extends Node {
         if (Object.keys(this.params).length === 0) {
             return document.createDocumentFragment(); // Return empty fragment if no params
         }
-        console.log(321);
 
         const result = document.createElement('div');
         result.classList.add('node-params');
