@@ -10,8 +10,8 @@ export class Blur extends FilterNode {
     constructor() {
         super();
         this.name = 'Gaussian Blur';
-        this.inputs = { in: 'in' };
-        this.outputs = { result: 'result' };
+        this.inputs = { in: null };
+        this.outputs = { result: null };
         this.params = {
             stdDeviation: 5
         };

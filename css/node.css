@@ -2,7 +2,7 @@
 :host {
     --bg-color: hsl(240, 50%, 10%);
     --border-color: hsl(from var(--bg-color) h s calc(l - 5));
-    --pad: 0.5em;
+    --pad: 0.25em 0.5em;
     --radius: 0.5em;
     position: absolute;
     width: var(--node-width);
@@ -45,7 +45,7 @@ header {
     order: -1;
     justify-content: space-between;
     align-items: center;
-    padding: .25em var(--pad);
+    padding: var(--pad);
     background-color: hsl(from var(--bg-color) h s calc(l - 5));
     cursor: grab;
     user-select: none;
@@ -65,10 +65,12 @@ header {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    padding: .25em .5em;
+    padding: 0.25em;
     font-size: 1rem;
+    line-height: 1;
     background: transparent;
     color: var(--color-text-muted);
+    margin-right: -0.5em;
 
     &:hover {
         color: var(--color-text);
@@ -89,7 +91,7 @@ main {
 /* Ports */
 .ports {
     display: flex;
-    order: 10;
+    order: 1;
     justify-content: space-between;
     align-items: center;
     padding: var(--pad);
@@ -177,3 +179,4 @@ main {
     align-items: center;
     border: none;
 }
+

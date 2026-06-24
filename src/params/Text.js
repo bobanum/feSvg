@@ -12,7 +12,7 @@ export class Text extends Param {
 
 	static dom = {
 		main: function () {
-			return Param.dom.main.call(this);
+			return Param.dom.main.call(this, this.dom.input());
 		},
 		input: function () {
 			let input = document.createElement('input');

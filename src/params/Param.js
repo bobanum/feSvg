@@ -15,14 +15,14 @@ export class Param extends Component {
 			result.href = '/css/params.css';
 			return result;
 		},
-		main: function () {
+		main: function (input) {
 			let result = document.createDocumentFragment();
 			result.appendChild(Param.dom.style());
 			let label = document.createElement('label');
 			label.textContent = this.label;
 			result.appendChild(label);
 
-			result.appendChild(this.createSlot());
+			result.appendChild(input);
 			return result;
 		}
 	};
