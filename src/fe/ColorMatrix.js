@@ -10,8 +10,8 @@ export class ColorMatrix extends FilterNode {
     constructor() {
         super();
         this.name = 'Color Matrix';
-        this.inputs = { in: 'in' };
-        this.outputs = { result: 'result' };
+        this.inputs = { in: null };
+        this.outputs = { result: [] };
         this.params = {
             type: 'matrix',
             values: '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0'

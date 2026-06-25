@@ -11,7 +11,7 @@ export class Flood extends FilterNode {
         super();
         this.name = 'Flood';
         this.inputs = {};
-        this.outputs = { result: 'result' };
+        this.outputs = { result: [] };
         this.params = {
             floodColor: '#000000',
             floodOpacity: 1

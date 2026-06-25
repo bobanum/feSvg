@@ -10,8 +10,8 @@ export class DropShadow extends FilterNode {
     constructor() {
         super();
         this.name = 'Drop Shadow';
-        this.inputs = { in: 'in' };
-        this.outputs = { result: 'result' };
+        this.inputs = { in: null };
+        this.outputs = { result: [] };
         this.params = {
             dx: 2,
             dy: 2,

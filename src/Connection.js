@@ -103,7 +103,9 @@ export class Connection {
         const sourceDot = this.sourceNode.shadowRoot?.querySelector(
             `[data-port="${this.sourcePort}"]`
         );
-        if (sourceDot) sourceDot.classList.remove('connected');
+        if (sourceDot && !this.sourceNode.hasOutputConnections(this.sourcePort)) {
+            sourceDot.classList.remove('connected');
+        }
 
         const targetDot = this.targetNode.shadowRoot?.querySelector(
             `[data-port="${this.targetPort}"]`

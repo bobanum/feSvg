@@ -10,8 +10,8 @@ export class Morphology extends FilterNode {
     constructor() {
         super();
         this.name = 'Morphology';
-        this.inputs = { in: 'in' };
-        this.outputs = { result: 'result' };
+        this.inputs = { in: null };
+        this.outputs = { result: [] };
         this.params = {
             operator: 'erode',
             radius: 1

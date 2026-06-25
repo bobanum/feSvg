@@ -55,6 +55,25 @@ export class Node extends Component {
         this.inputValues[portId] = value;
     }
 
+    addOutputConnection(portId, connectionId) {
+        if (!(portId in (this.outputs || {}))) return;
+        if (!Array.isArray(this.outputs[portId])) {
+            this.outputs[portId] = [];
+        }
+        if (!this.outputs[portId].includes(connectionId)) {
+            this.outputs[portId].push(connectionId);
+        }
+    }
+
+    removeOutputConnection(portId, connectionId) {
+        if (!Array.isArray(this.outputs?.[portId])) return;
+        this.outputs[portId] = this.outputs[portId].filter((id) => id !== connectionId);
+    }
+
+    hasOutputConnections(portId) {
+        return Array.isArray(this.outputs?.[portId]) && this.outputs[portId].length > 0;
+    }
+
     clearInputValue(portId) {
         if (!(portId in this.inputValues)) return;
         this.inputValues[portId] = null;
@@ -146,7 +165,8 @@ export class Node extends Component {
             const portsRight = document.createElement('div');
             portsRight.classList.add('ports-right');
             Object.entries(this.outputs).forEach(([id, name]) => {
-                const port = this.dom.port(id, name);
+                const label = Array.isArray(name) || name == null ? id : name;
+                const port = this.dom.port(id, label);
                 port.classList.add('output');
                 portsRight.appendChild(port);
             });

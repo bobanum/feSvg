@@ -10,8 +10,8 @@ export class DiffuseLighting extends FilterNode {
     constructor() {
         super();
         this.name = 'Diffuse Lighting';
-        this.inputs = { in: 'in' };
-        this.outputs = { result: 'result' };
+        this.inputs = { in: null };
+        this.outputs = { result: [] };
         this.params = {
             surfaceScale: 1,
             diffuseConstant: 1,

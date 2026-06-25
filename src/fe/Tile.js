@@ -10,8 +10,8 @@ export class Tile extends FilterNode {
     constructor() {
         super();
         this.name = 'Tile';
-        this.inputs = { in: 'in' };
-        this.outputs = { result: 'result' };
+        this.inputs = { in: null };
+        this.outputs = { result: [] };
         this.params = {};
     }
 

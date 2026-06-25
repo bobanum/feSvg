@@ -10,8 +10,8 @@ export class Merge extends FilterNode {
     constructor() {
         super();
         this.name = 'Merge';
-        this.inputs = { in: 'in', in2: 'in2' };
-        this.outputs = { result: 'result' };
+        this.inputs = { in: null, in2: null };
+        this.outputs = { result: [] };
         this.params = {};
     }
 

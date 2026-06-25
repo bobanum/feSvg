@@ -10,8 +10,8 @@ export class ComponentTransfer extends FilterNode {
     constructor() {
         super();
         this.name = 'Component Transfer';
-        this.inputs = { in: 'in' };
-        this.outputs = { result: 'result' };
+        this.inputs = { in: null };
+        this.outputs = { result: [] };
         this.params = {
             type: 'identity',
             tableValues: '',

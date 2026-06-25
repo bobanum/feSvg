@@ -10,8 +10,8 @@ export class SpecularLighting extends FilterNode {
     constructor() {
         super();
         this.name = 'Specular Lighting';
-        this.inputs = { in: 'in' };
-        this.outputs = { result: 'result' };
+        this.inputs = { in: null };
+        this.outputs = { result: [] };
         this.params = {
             surfaceScale: 1,
             specularConstant: 1,

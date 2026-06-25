@@ -11,7 +11,7 @@ export class Turbulence extends FilterNode {
         super();
         this.name = 'Turbulence';
         this.inputs = {};
-        this.outputs = { result: 'result' };
+        this.outputs = { result: [] };
         this.params = {
             type: 'turbulence',
             baseFrequency: 0.05,

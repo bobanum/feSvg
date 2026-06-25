@@ -303,6 +303,7 @@ export class NodeEditor {
 
         const connection = new Connection(sourceNode, sourcePort, targetNode, targetPort);
         this.connections.set(connection.id, connection);
+        sourceNode.addOutputConnection(sourcePort, connection.id);
         targetNode.inputs[targetPort] = sourceNode;
 
         targetNode.setInputValue(targetPort, sourceNode.getOutputValue(sourcePort));
@@ -316,6 +317,8 @@ export class NodeEditor {
         const connection = this.connections.get(connectionId);
         if (!connection) return;
 
+        connection.sourceNode.removeOutputConnection(connection.sourcePort, connection.id);
+        connection.targetNode.inputs[connection.targetPort] = null;
         connection.targetNode.clearInputValue(connection.targetPort);
         connection.targetNode.refreshPreview();
         connection.remove();
