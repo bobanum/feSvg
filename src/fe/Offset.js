@@ -10,8 +10,8 @@ export class Offset extends FilterNode {
     constructor() {
         super();
         this.name = 'Offset';
-        this.inputs = { in: 'in' };
-        this.outputs = { result: 'result' };
+        this.inputs = { in: null };
+        this.outputs = { result: null };
         this.params = {
             dx: 0,
             dy: 0
@@ -32,10 +32,15 @@ export class Offset extends FilterNode {
 
     connectedCallback() {
         super.connectedCallback();
+        this.refreshPreview();
     }
+
     render() {
-        const result = document.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
-        result.setAttribute('stdDeviation', this.params.stdDeviation);
+        const result = document.createElementNS('http://www.w3.org/2000/svg', 'feOffset');
+        result.setAttribute('in', this.getInputValue('in') || 'SourceGraphic');
+        result.setAttribute('dx', String(Number(this.params.dx) || 0));
+        result.setAttribute('dy', String(Number(this.params.dy) || 0));
+        result.setAttribute('result', this.getOutputValue('result'));
         return result;
     }
     /**
@@ -56,8 +61,11 @@ export class Offset extends FilterNode {
         result.appendChild(dY);
 
         result.addEventListener('input', (event) => {
-            console.log(event);
-            this.params.dx = event.target.value;
+            const paramName = event.target?.dataset?.param;
+            if (!paramName) return;
+
+            this.params[paramName] = Number(event.target.value);
+            this.notifyChanged();
         });
 
         return result;

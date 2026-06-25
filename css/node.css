@@ -158,12 +158,11 @@ main {
 }
 .preview, node-preview {
     --c1: #fff3;
-    --c2: #0003;
+    --c2: #0002;
     background-color: #fff;
     background-image: conic-gradient(var(--c1) 0.25turn, var(--c2) 0.25turn 0.5turn, var(--c1) 0.5turn 0.75turn, var(--c2) 0.75turn);
     aspect-ratio: 1 / 1;
-    padding: 12px;
-    margin: 12px;
+    margin: 0.5em;
     order: 100;
     background-size: 2em 2em;
     background-position: center;

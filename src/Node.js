@@ -6,13 +6,15 @@ import { Component } from "./Component.js";
 export class Node extends Component {
     static idCounter = 0;
 
-    constructor(x = 0, y = 0, inputs = { in: 'in' }, outputs = { result: 'result' }) {
+    constructor(x = 0, y = 0, inputs = { in: null }, outputs = { result: null }) {
         super();
         this.filterType = '';
         this.x = x;
         this.y = y;
         this.inputs = inputs;
         this.outputs = outputs;
+        this.inputValues = {};
+        this.outputValues = {};
         this.params = {};
         this.name = '';
 
@@ -20,7 +22,7 @@ export class Node extends Component {
         this._dragStart = { x: 0, y: 0 };
         this._initialPos = { x: 0, y: 0 };
 
-        this.adoptFunctions({dom: Node.dom, evt: Node.evt});
+        this.adoptFunctions({ dom: Node.dom, evt: Node.evt });
     }
 
     connectedCallback() {
@@ -31,6 +33,65 @@ export class Node extends Component {
             this.shadowRoot.appendChild(this.dom.main());
         }
         this.classList.add('node');
+        this.initializePortValues();
+        this.addEventListener('click', this.evt.click);
+    }
+
+    initializePortValues() {
+        this.inputValues = Object.fromEntries(
+            Object.keys(this.inputs || {}).map((key) => [key, null])
+        );
+        this.outputValues = Object.fromEntries(
+            Object.keys(this.outputs || {}).map((key) => [key, `${this.id}-${key}`])
+        );
+    }
+
+    getInputValue(portId) {
+        return this.inputValues?.[portId] ?? null;
+    }
+
+    setInputValue(portId, value) {
+        if (!(portId in this.inputValues)) return;
+        this.inputValues[portId] = value;
+    }
+
+    clearInputValue(portId) {
+        if (!(portId in this.inputValues)) return;
+        this.inputValues[portId] = null;
+    }
+
+    getOutputValue(portId) {
+        return this.outputValues?.[portId] ?? `${this.id}-${portId}`;
+    }
+
+    refreshPreview() {
+        const preview = this.shadowRoot?.querySelector('node-preview');
+        const filter = preview?.shadowRoot?.querySelector('filter');
+        if (!filter || typeof this.renderPreview !== 'function') return;
+
+        const primitive = this.renderPreview();
+        filter.replaceChildren();
+        if (primitive) {
+            filter.appendChild(primitive);
+        }
+    }
+    renderPreview() {
+        const result = document.createDocumentFragment();
+        for (const input in this.inputs) {
+            if (!this.inputs[input]) continue;
+            result.appendChild(this.inputs[input].renderPreview());
+        }
+        result.appendChild(this.render());
+        return result;
+    }
+
+    notifyChanged() {
+        this.refreshPreview();
+        this.dispatchEvent(new CustomEvent('node-changed', {
+            bubbles: true,
+            composed: true,
+            detail: { nodeId: this.id }
+        }));
     }
 
     /**
@@ -68,10 +129,6 @@ export class Node extends Component {
             const body = document.createElement('main');
             body.appendChild(this.createSlot());
             result.appendChild(body);
-            // let handle = document.createElement('img');
-            // handle.src = '/img/handle2.svg';
-            // handle.classList.add('handle');
-            // result.appendChild(handle);
             return result;
         },
         ports: function () {
@@ -111,6 +168,7 @@ export class Node extends Component {
             return header;
         },
         port: function (id, name) {
+            name = name || id;
             const result = document.createElement('div');
             result.classList.add('port');
             result.dataset.portId = id;
@@ -130,7 +188,7 @@ export class Node extends Component {
         click: function (e) {
             if (e.target.classList.contains('dot')) return;
 
-            document.querySelectorAll('filter-node.selected').forEach(n => {
+            document.querySelectorAll('.node.selected').forEach(n => {
                 if (n !== this) n.classList.remove('selected');
             });
             this.classList.add('selected');

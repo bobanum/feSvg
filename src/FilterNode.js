@@ -7,7 +7,7 @@ import { Preview } from "./Preview.js";
 export class FilterNode extends Node {
     static idCounter = 0;
 
-    constructor(x, y, inputs = { in: 'in' }, outputs = { result: 'result' }) {
+    constructor(x, y, inputs = { in: null }, outputs = { result: null }) {
         super(x, y, inputs, outputs);
         this.adoptFunctions({ dom: Node.dom });
     }
@@ -119,6 +119,14 @@ export class FilterNode extends Node {
         }
         return result;
     }
+	createSvg(tagName, attributes = {}) {
+		const element = document.createElementNS('http://www.w3.org/2000/svg', tagName);
+		for (const [key, value] of Object.entries(attributes)) {
+			element.setAttribute(key, value);
+		}
+		return element;
+	}
+
 }
 
 FilterNode.register('filter-node');

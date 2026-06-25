@@ -10,7 +10,7 @@ export class Source extends FilterNode {
         super();
         this.name = 'Source';
         this.inputs = {};
-        this.outputs = { result: 'result' };
+        this.outputs = { result: null };
         this.params = {
             source: 'SourceGraphic'
         };
@@ -30,9 +30,34 @@ export class Source extends FilterNode {
 
     connectedCallback() {
         super.connectedCallback();
+        this.refreshPreview();
     }
+
+    getOutputValue(portId = 'result') {
+        if (portId !== 'result') {
+            return super.getOutputValue(portId);
+        }
+        return this.params.source || 'SourceGraphic';
+    }
+
     render() {
-        const result = document.createElementNS('http://www.w3.org/2000/svg', 'feSourceGraphic');
+        console.log(123);
+        
+        return document.createDocumentFragment(); // Source node does not render any filter primitive
+    }
+    renderPreview() {
+        // SourceAlpha n'est pas affichable seul: on le convertit en visuel blanc
+        // avec conservation de l'alpha pour un preview explicite.
+        const attributes = {
+            in: this.params.source || 'SourceGraphic',
+        }
+        const result = this.createSvg('feOffset', attributes);
+        // const result = document.createElementNS('http://www.w3.org/2000/svg', 'feColorMatrix');
+        // result.setAttribute('in', this.params.source || 'SourceGraphic');
+        // result.setAttribute('type', 'matrix');
+        // result.setAttribute('values', '0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0');
+        console.log(result);
+        
         return result;
     }
     /**
@@ -47,6 +72,10 @@ export class Source extends FilterNode {
         source.choices = ['SourceGraphic', 'SourceAlpha'];
         source.value = this.params.source;
         source.label = 'Source';
+        source.addEventListener('input', (event) => {
+            this.params.source = event.target.value;
+            this.notifyChanged();
+        });
 
         result.appendChild(source);
 

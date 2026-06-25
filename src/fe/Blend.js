@@ -10,8 +10,8 @@ export class Blend extends FilterNode {
     constructor() {
         super();
         this.name = 'Blend';
-        this.inputs = { in: 'in', in2: 'in2' };
-        this.outputs = { result: 'result' };
+        this.inputs = { in: null, in2: null };
+        this.outputs = { result: null };
     }
 
     /**

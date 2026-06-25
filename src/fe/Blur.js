@@ -31,12 +31,19 @@ export class Blur extends FilterNode {
 
     connectedCallback() {
         super.connectedCallback();
+        this.refreshPreview();
     }
+
     render() {
-        const result = document.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
-        result.setAttribute('stdDeviation', this.params.stdDeviation);
+        const attributes = {
+            result: this.getOutputValue('result'),
+            in: this.getInputValue('in') || 'SourceGraphic',
+            stdDeviation: String(Number(this.params.stdDeviation) || 0)
+        };
+        const result = this.createSvg('feGaussianBlur', attributes);
         return result;
     }
+    
     /**
      * Create HTML for node parameters
      */
@@ -52,8 +59,8 @@ export class Blur extends FilterNode {
         result.appendChild(stdDeviationParam);
         
         result.addEventListener('input', (event) => {
-            console.log(event);
-            this.params.stdDeviation = event.target.value;
+            this.params.stdDeviation = Number(event.target.value);
+            this.notifyChanged();
         });
 
         return result;

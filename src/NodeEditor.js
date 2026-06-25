@@ -1,6 +1,5 @@
-import { FilterNode } from './FilterNode.js';
 import { Connection } from './Connection.js';
-import * as Fe from './fe/index.js';
+import './fe/index.js';
 
 /**
  * NodeEditor class - Main controller for the node-based editor
@@ -28,6 +27,21 @@ export class NodeEditor {
         this.addNode(document.createElement('blur-filter-node'), 400, 100);
         this.addNode(document.createElement('offset-filter-node'), 700, 100);
         this.addNode(document.createElement('blend-filter-node'), 1000, 100);
+    }
+
+    createNodeElement(type) {
+        switch (type) {
+            case 'source':
+                return document.createElement('source-node');
+            case 'blur':
+                return document.createElement('blur-filter-node');
+            case 'offset':
+                return document.createElement('offset-filter-node');
+            case 'blend':
+                return document.createElement('blend-filter-node');
+            default:
+                return null;
+        }
     }
 
     /**
@@ -86,23 +100,29 @@ export class NodeEditor {
                 this.deleteSelected();
             }
         });
+
+        document.addEventListener('node-changed', (e) => {
+            const node = this.nodes.get(e.detail.nodeId);
+            if (node) {
+                node.refreshPreview();
+            }
+        });
     }
 
     /**
      * Add a new node to the editor
      */
     addNode(node, x, y) {
-        // Add to DOM first (required for custom elements)
         const container = document.getElementById('nodes-container');
         if (typeof node === 'string') {
-            node = new FilterNode();
-            // Then initialize
-            node.init(node, x, y);
+            node = this.createNodeElement(node);
+            if (!node) return null;
         }
 
         node.init(x, y);
         container.appendChild(node);
         this.nodes.set(node.id, node);
+        node.refreshPreview();
 
         return node;
     }
@@ -179,6 +199,7 @@ export class NodeEditor {
      */
     handlePortMouseUp(e) {
         if (!this.connectionStart) return;
+console.log(e);
 
         // Remove temporary connection
         if (this.tempConnection && this.tempConnection.parentNode) {
@@ -221,18 +242,45 @@ export class NodeEditor {
      * Create a connection between two nodes
      */
     createConnection(sourceNode, sourcePort, targetNode, targetPort) {
-        // Check if connection already exists
-        const existingKey = `${sourceNode.id}-${sourcePort}-${targetNode.id}-${targetPort}`;
-        if (this.connections.has(existingKey)) {
-            console.log('Connection already exists');
-            return null;
+        console.log(arguments);
+        
+        const duplicateConnection = [...this.connections.values()].find((connection) => (
+            connection.sourceNode.id === sourceNode.id
+            && connection.sourcePort === sourcePort
+            && connection.targetNode.id === targetNode.id
+            && connection.targetPort === targetPort
+        ));
+        if (duplicateConnection) {
+            return duplicateConnection;
+        }
+
+        const existingInputConnection = [...this.connections.entries()].find(([, connection]) => (
+            connection.targetNode.id === targetNode.id && connection.targetPort === targetPort
+        ));
+        if (existingInputConnection) {
+            const [connectionId] = existingInputConnection;
+            this.removeConnection(connectionId);
         }
 
         const connection = new Connection(sourceNode, sourcePort, targetNode, targetPort);
         this.connections.set(connection.id, connection);
+        targetNode.inputs[targetPort] = sourceNode;
+
+        targetNode.setInputValue(targetPort, sourceNode.getOutputValue(sourcePort));
+        targetNode.refreshPreview();
 
         console.log(`Connected ${sourceNode.name}.${sourcePort} -> ${targetNode.name}.${targetPort}`);
         return connection;
+    }
+
+    removeConnection(connectionId) {
+        const connection = this.connections.get(connectionId);
+        if (!connection) return;
+
+        connection.targetNode.clearInputValue(connection.targetPort);
+        connection.targetNode.refreshPreview();
+        connection.remove();
+        this.connections.delete(connectionId);
     }
 
     /**
@@ -250,7 +298,7 @@ export class NodeEditor {
      * Delete selected nodes and connections
      */
     deleteSelected() {
-        const selectedNode = document.querySelector('filter-node.selected');
+        const selectedNode = document.querySelector('.node.selected');
         if (selectedNode) {
             const nodeId = selectedNode.id;
             const node = this.nodes.get(nodeId);
@@ -264,9 +312,7 @@ export class NodeEditor {
             });
 
             connectionsToRemove.forEach(id => {
-                const connection = this.connections.get(id);
-                connection.remove();
-                this.connections.delete(id);
+                this.removeConnection(id);
             });
 
             // Remove node
@@ -278,11 +324,7 @@ export class NodeEditor {
         const selectedConnection = document.querySelector('.connection.active');
         if (selectedConnection) {
             const connectionId = selectedConnection.id;
-            const connection = this.connections.get(connectionId);
-            if (connection) {
-                connection.remove();
-                this.connections.delete(connectionId);
-            }
+            this.removeConnection(connectionId);
         }
     }
 
@@ -290,7 +332,7 @@ export class NodeEditor {
      * Clear all nodes and connections
      */
     clear() {
-        this.connections.forEach(connection => connection.remove());
+        this.connections.forEach((connection) => connection.remove());
         this.connections.clear();
 
         this.nodes.forEach(node => node.remove());
