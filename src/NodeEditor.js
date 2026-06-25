@@ -24,21 +24,22 @@ export class NodeEditor {
 
         // Create an initial source node
         this.addNode(document.createElement('source-node'), 100, 100);
-        this.addNode(document.createElement('blur-filter-node'), 400, 100);
-        this.addNode(document.createElement('offset-filter-node'), 700, 100);
-        this.addNode(document.createElement('blend-filter-node'), 1000, 100);
+        // this.addNode(document.createElement('blur-filter-node'), 400, 100);
+        // this.addNode(document.createElement('offset-filter-node'), 700, 100);
+        // this.addNode(document.createElement('blend-filter-node'), 1000, 100);
     }
 
     createNodeElement(type) {
+        if (type === 'source') {
+            return document.createElement('source-node');
+        }
+
+        const tagName = `${type}-filter-node`;
+        if (customElements.get(tagName)) {
+            return document.createElement(tagName);
+        }
+
         switch (type) {
-            case 'source':
-                return document.createElement('source-node');
-            case 'blur':
-                return document.createElement('blur-filter-node');
-            case 'offset':
-                return document.createElement('offset-filter-node');
-            case 'blend':
-                return document.createElement('blend-filter-node');
             default:
                 return null;
         }
@@ -48,39 +49,37 @@ export class NodeEditor {
      * Setup global event listeners
      */
     setupEventListeners() {
-        // Add node button
-        const addBtn = document.getElementById('add-node-btn');
-        const nodeMenu = document.getElementById('node-menu');
+        // Library panel drag and drop
+        const libraryItems = document.querySelectorAll('.library-item');
+        const editorContainer = document.getElementById('editor-container');
 
-        addBtn.addEventListener('click', (e) => {
-            nodeMenu.style.left = `${e.clientX}px`;
-            nodeMenu.style.top = `${e.clientY}px`;
-            nodeMenu.classList.toggle('hidden');
+        libraryItems.forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('node-type', e.target.dataset.type);
+                e.dataTransfer.effectAllowed = 'copy';
+            });
         });
 
-        // Node menu selection
-        const menuItems = nodeMenu.querySelectorAll('.menu-item');
-        menuItems.forEach(item => {
-            item.addEventListener('click', (e) => {
-                const type = e.target.dataset.type;
-                const x = Math.random() * 400 + 200;
-                const y = Math.random() * 300 + 150;
+        editorContainer.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+        });
+
+        editorContainer.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const type = e.dataTransfer.getData('node-type');
+            if (type) {
+                const rect = editorContainer.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
                 this.addNode(type, x, y);
-                nodeMenu.classList.add('hidden');
-            });
+            }
         });
 
         // Clear button
         document.getElementById('clear-btn').addEventListener('click', () => {
             if (confirm('Clear all nodes and connections?')) {
                 this.clear();
-            }
-        });
-
-        // Close menu on outside click
-        document.addEventListener('click', (e) => {
-            if (!nodeMenu.contains(e.target) && e.target !== addBtn) {
-                nodeMenu.classList.add('hidden');
             }
         });
 
@@ -114,6 +113,7 @@ export class NodeEditor {
      */
     addNode(node, x, y) {
         const container = document.getElementById('nodes-container');
+
         if (typeof node === 'string') {
             node = this.createNodeElement(node);
             if (!node) return null;
@@ -122,9 +122,51 @@ export class NodeEditor {
         node.init(x, y);
         container.appendChild(node);
         this.nodes.set(node.id, node);
+
+        this.autoConnectNode(node);
         node.refreshPreview();
 
         return node;
+    }
+
+    /**
+     * Automatically connect a new node to the nearest node with an available output
+     */
+    autoConnectNode(newNode) {
+        // Skip if node has no inputs
+        if (!newNode.inputs || Object.keys(newNode.inputs).length === 0) {
+            return;
+        }
+
+        let nearestNode = null;
+        let minDistance = Infinity;
+
+        // Find the nearest node with an output port
+        this.nodes.forEach(node => {
+            if (node.id === newNode.id) return; // Skip self
+            if (!node.outputs || Object.keys(node.outputs).length === 0) return; // Skip nodes without outputs
+
+            const distance = Math.sqrt(
+                Math.pow(node.x - newNode.x, 2) + 
+                Math.pow(node.y - newNode.y, 2)
+            );
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestNode = node;
+            }
+        });
+
+        // Connect to the nearest node if found and within reasonable distance
+        if (nearestNode && minDistance < 600) {
+            const sourcePortId = Object.keys(nearestNode.outputs)[0];
+            const targetPortId = Object.keys(newNode.inputs)[0];
+            
+            // Wait a bit for the DOM to be fully ready
+            setTimeout(() => {
+                this.createConnection(nearestNode, sourcePortId, newNode, targetPortId);
+            }, 50);
+        }
     }
 
     /**
@@ -199,7 +241,6 @@ export class NodeEditor {
      */
     handlePortMouseUp(e) {
         if (!this.connectionStart) return;
-console.log(e);
 
         // Remove temporary connection
         if (this.tempConnection && this.tempConnection.parentNode) {
@@ -242,8 +283,6 @@ console.log(e);
      * Create a connection between two nodes
      */
     createConnection(sourceNode, sourcePort, targetNode, targetPort) {
-        console.log(arguments);
-        
         const duplicateConnection = [...this.connections.values()].find((connection) => (
             connection.sourceNode.id === sourceNode.id
             && connection.sourcePort === sourcePort

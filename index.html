@@ -14,12 +14,95 @@
         <header class="app-header">
             <h1><img src="/favicon.svg" alt=""> feSvg</h1>
             <div class="toolbar">
-                <button id="add-node-btn" class="btn-primary">+ Add Node</button>
                 <button id="clear-btn" class="btn-secondary">Clear All</button>
             </div>
         </header>
 
-        <div id="editor-container" class="editor-container">
+        <div class="main-container">
+            <!-- Library Panel -->
+            <aside class="library-panel">
+                <h2>Library</h2>
+                <div class="library-section">
+                    <h3>Sources</h3>
+                    <div class="library-items">
+                        <div class="library-item" data-type="source" draggable="true">
+                            <div class="library-item-icon">📷</div>
+                            <span>SourceGraphic</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="library-section">
+                    <h3>Filters</h3>
+                    <div class="library-items">
+                        <div class="library-item" data-type="blur" draggable="true">
+                            <div class="library-item-icon">🌫️</div>
+                            <span>Gaussian Blur</span>
+                        </div>
+                        <div class="library-item" data-type="offset" draggable="true">
+                            <div class="library-item-icon">↗️</div>
+                            <span>Offset</span>
+                        </div>
+                        <div class="library-item" data-type="blend" draggable="true">
+                            <div class="library-item-icon">🎨</div>
+                            <span>Blend</span>
+                        </div>
+                        <div class="library-item" data-type="colormatrix" draggable="true">
+                            <div class="library-item-icon">🌈</div>
+                            <span>Color Matrix</span>
+                        </div>
+                        <div class="library-item" data-type="composite" draggable="true">
+                            <div class="library-item-icon">🔗</div>
+                            <span>Composite</span>
+                        </div>
+                        <div class="library-item" data-type="morphology" draggable="true">
+                            <div class="library-item-icon">⚫</div>
+                            <span>Morphology</span>
+                        </div>
+                        <div class="library-item" data-type="flood" draggable="true">
+                            <div class="library-item-icon">🎨</div>
+                            <span>Flood</span>
+                        </div>
+                        <div class="library-item" data-type="turbulence" draggable="true">
+                            <div class="library-item-icon">🌀</div>
+                            <span>Turbulence</span>
+                        </div>
+                        <div class="library-item" data-type="displacementmap" draggable="true">
+                            <div class="library-item-icon">📐</div>
+                            <span>Displacement Map</span>
+                        </div>
+                        <div class="library-item" data-type="convolvematrix" draggable="true">
+                            <div class="library-item-icon">🔢</div>
+                            <span>Convolve Matrix</span>
+                        </div>
+                        <div class="library-item" data-type="componenttransfer" draggable="true">
+                            <div class="library-item-icon">📊</div>
+                            <span>Component Transfer</span>
+                        </div>
+                        <div class="library-item" data-type="diffuselighting" draggable="true">
+                            <div class="library-item-icon">💡</div>
+                            <span>Diffuse Lighting</span>
+                        </div>
+                        <div class="library-item" data-type="specularlighting" draggable="true">
+                            <div class="library-item-icon">✨</div>
+                            <span>Specular Lighting</span>
+                        </div>
+                        <div class="library-item" data-type="tile" draggable="true">
+                            <div class="library-item-icon">🔲</div>
+                            <span>Tile</span>
+                        </div>
+                        <div class="library-item" data-type="merge" draggable="true">
+                            <div class="library-item-icon">🔀</div>
+                            <span>Merge</span>
+                        </div>
+                        <div class="library-item" data-type="dropshadow" draggable="true">
+                            <div class="library-item-icon">🌑</div>
+                            <span>Drop Shadow</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <div id="editor-container" class="editor-container">
             <!-- SVG layer for connections -->
             <svg id="connections-svg" class="connections-layer">
                 <defs>
@@ -46,14 +129,7 @@
 
             <!-- Nodes container -->
             <div id="nodes-container" class="nodes-container"></div>
-        </div>
-
-        <!-- Context menu for node type selection -->
-        <div id="node-menu" class="node-menu hidden">
-            <div class="menu-item" data-type="source">SourceGraphic</div>
-            <div class="menu-item" data-type="blur">Gaussian Blur</div>
-            <div class="menu-item" data-type="offset">Offset</div>
-            <div class="menu-item" data-type="blend">Blend</div>
+            </div>
         </div>
     </div>
 
