@@ -145,8 +145,13 @@ export class Node extends Component {
 
             // Bring to front
             this.style.zIndex = '100';
-            document.addEventListener('mousemove', this.evt.document_mouseMove);
-            document.addEventListener('mouseup', this.evt.document_mouseUp);
+            
+            // Bind the event handlers to maintain the correct 'this' context
+            this._boundMouseMove = this.evt.document_mouseMove.bind(this);
+            this._boundMouseUp = this.evt.document_mouseUp.bind(this);
+            
+            document.addEventListener('mousemove', this._boundMouseMove);
+            document.addEventListener('mouseup', this._boundMouseUp);
 
             e.preventDefault();
         },
@@ -169,8 +174,8 @@ export class Node extends Component {
                 this._isDragging = false;
                 this.classList.remove('dragging');
                 this.style.zIndex = '';
-                document.removeEventListener('mousemove', this.evt.document_mouseMove);
-                document.removeEventListener('mouseup', this.evt.document_mouseUp);
+                document.removeEventListener('mousemove', this._boundMouseMove);
+                document.removeEventListener('mouseup', this._boundMouseUp);
             }
         },
     };
