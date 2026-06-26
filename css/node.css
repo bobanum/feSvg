@@ -6,6 +6,7 @@
     --radius: 0.5em;
     position: absolute;
     width: var(--node-width);
+    width: auto;
     background: var(--bg-color);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
@@ -25,20 +26,6 @@
     }
 }
 
-.handle {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 1em;
-    height: 1em;
-    cursor: resize-corner;
-    user-select: none;
-    z-index: 10;
-
-    &:active {
-        cursor: grabbing;
-    }
-}
 /* Node Header */
 header {
     display: flex;
@@ -159,8 +146,7 @@ main {
 .preview, node-preview {
     --c1: #fff3;
     --c2: #0002;
-    background-color: #fff;
-    background-image: conic-gradient(var(--c1) 0.25turn, var(--c2) 0.25turn 0.5turn, var(--c1) 0.5turn 0.75turn, var(--c2) 0.75turn);
+    
     aspect-ratio: 1 / 1;
     margin: 0.5em;
     order: 100;

@@ -1,0 +1,99 @@
+:host {
+	display: grid;
+	/* width: 100%; */
+	box-sizing: border-box;
+	--btn-size: 2em;
+	--btn-pad: 0.25em;
+	--radius: 0.25em;
+}
+
+.toolbar {
+	--highlight-color: hsl(from var(--color-primary) h s calc(l - 10));
+	--highlight-color: yellow;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	padding: 0.5rem 0;
+	align-items: end;
+	justify-content: space-between;
+	position: relative;
+
+	fieldset {
+		border: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--btn-pad);
+	}
+
+	label {
+		transition: outline-color 0.2s ease;
+		color: var(--color-text);
+		width: var(--btn-size);
+		height: var(--btn-size);
+		background-size: 50% 50%;
+		border-radius: var(--radius);
+		outline-color: var(--highlight-color);
+		outline-width: 2px;
+		outline-offset: 1px;
+		outline-style: none;
+
+		&:hover,
+		&:has(:checked) {
+			outline-style: solid;
+		}
+
+		input {
+			position: absolute;
+			opacity: 0;
+			pointer-events: none;
+		}
+	}
+
+
+	.toolbar-shape-menu {
+		position: relative;
+
+		.trigger {
+			width: var(--btn-size);
+			height: var(--btn-size);
+			border-radius: var(--radius);
+			cursor: pointer;
+		}
+
+		fieldset {
+			gap: var(--btn-pad);
+			position: absolute;
+			right: calc(-1 * var(--btn-pad));
+			top: 100%;
+			z-index: 100;
+			padding: var(--btn-pad);
+			background: hsl(from var(--color-surface) h s l);
+			box-shadow: 0 4px 8px hsl(0 0% 0% / 0.35);
+
+			label {
+				background-color: #fff1;
+			}
+		}
+
+		&:not(:focus-within) .toolbar-shape-panel {
+			display: none;
+		}
+	}
+
+}
+
+
+.svg {
+	width: 100%;
+	height: 100%;
+	max-width: 100%;
+	max-height: 100%;
+	overflow: visible;
+	background-size: 2em 2em;
+
+	use {
+		transform-origin: center;
+	}
+}
