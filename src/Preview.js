@@ -11,10 +11,11 @@ const PREVIEW_BACKGROUNDS = [
 ];
 
 const PREVIEW_SHAPES = [
-	{ id: 'abc', label: 'ABC' },
 	{ id: 'logo', label: 'Logo' },
+	{ id: 'abc', label: 'ABC' },
 	{ id: 'cat', label: 'Chat' },
-	{ id: 'clothing-button', label: 'Bouton' }
+	{ id: 'flower', label: 'Fleur' },
+	{ id: 'clothing-button', label: 'Bouton' },
 ];
 
 /**
@@ -25,7 +26,7 @@ export class Preview extends Component {
 		super();
 		this.state = {
 			background: 'light-checker',
-			shape: 'abc'
+			shape: PREVIEW_SHAPES[0].id,
 		};
 		this.adoptFunctions({ dom: Preview.dom });
 	}
