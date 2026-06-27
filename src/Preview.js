@@ -107,13 +107,25 @@ export class Preview extends Component {
 			return result;
 		},
 		toolbar: function () {
-			const toolbar = document.createElement('div');
-			toolbar.classList.add('toolbar');
+			const result = document.createElement('div');
+			result.classList.add('toolbar');
+			result.appendChild(this.dom.collapseButton());
+			result.appendChild(this.dom.backgroundGroup());
+			result.appendChild(this.dom.shapeMenu());
 
-			toolbar.appendChild(this.dom.backgroundGroup());
-			toolbar.appendChild(this.dom.shapeMenu());
-
-			return toolbar;
+			return result;
+		},
+		collapseButton: function () {
+			const result = document.createElement('label');
+			const checkbox = document.createElement('input');
+			checkbox.type = 'checkbox';
+			checkbox.checked = true;
+			result.appendChild(checkbox);
+			const span = document.createElement('span');
+			span.textContent = 'Prévisualisation';
+			result.appendChild(span);
+			result.classList.add('collapse-button');
+			return result;
 		},
 		backgroundGroup: function () {
 			const fieldset = document.createElement('fieldset');
@@ -121,6 +133,7 @@ export class Preview extends Component {
 
 			for (const option of PREVIEW_BACKGROUNDS) {
 				const label = document.createElement('label');
+				label.classList.add('option');
 
 				const input = document.createElement('input');
 				input.type = 'radio';
@@ -128,7 +141,7 @@ export class Preview extends Component {
 				input.value = option.id;
 				input.dataset.backgroundRadio = 'true';
 				input.checked = this.state.background === option.id;
-				
+
 				const text = document.createElement('span');
 				label.style = option.style;
 				label.appendChild(input);
@@ -168,7 +181,7 @@ export class Preview extends Component {
 
 			for (const option of PREVIEW_SHAPES) {
 				const label = document.createElement('label');
-				label.classList.add('shape-option');
+				label.classList.add('option');
 				label.title = option.label;
 
 				const input = document.createElement('input');
@@ -198,7 +211,7 @@ export class Preview extends Component {
 			}
 			panel.addEventListener('change', (e) => {
 				console.log(e);
-				
+
 				this.state.shape = e.target.value;
 				this.applyState();
 			});
