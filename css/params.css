@@ -3,13 +3,15 @@
     grid-template: subgrid / subgrid;
     grid-column: span 2;
     align-items: center;
-    
+
 }
 
-input, select, fieldset {
+input,
+select,
+fieldset {
     font-size: 0.875rem;
     color: var(--color-text);
-    padding: 6px 8px !important;
+    padding: 6px 8px;
     background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: .25em;
@@ -19,6 +21,7 @@ input, select, fieldset {
         border-color: var(--color-primary);
     }
 }
+
 fieldset {
     padding: 0;
     margin: 0;
@@ -27,6 +30,56 @@ fieldset {
     gap: 0.5ch;
 }
 
+.range-input-group {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5ch;
+    align-items: center;
+}
+
+.range-input-group input[type="range"] {
+    width: 100%;
+}
+
+:host(matrix-param) {
+    grid-template: auto / auto;
+    line-height: 1;
+
+    >label {
+        display: none;
+    }
+
+    .matrix-param-grid {
+        display: grid;
+        grid-template-columns: auto repeat(5, 1fr);
+        grid-template-rows: auto repeat(4, auto);
+        gap: 0.15em;
+        text-align: center;
+        align-items: center;
+
+        input[type="number"] {
+            text-align: right;
+            padding: 4px 6px;
+            font-size: 0.75rem;
+        }
+    }
+
+    .input-label {
+        grid-area: 1 / 3 / span 1 / span 5;
+        border-bottom: 1px solid hsl(from currentColor h s l / 0.5);
+    }
+
+    .output-label {
+        grid-area: 3 / 1 / span 4 / span 1;
+        writing-mode: sideways-lr;
+        border-right: 1px solid;
+    }
+}
+
 :host([type="radio"]) fieldset {
     background-color: red;
+}
+
+input[type="number"] {
+    appearance: textfield;
 }

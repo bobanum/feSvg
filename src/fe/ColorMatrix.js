@@ -14,7 +14,11 @@ export class ColorMatrix extends FilterNode {
         this.outputs = { result: [] };
         this.params = {
             type: 'matrix',
-            values: '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0'
+            values: {
+                matrix: '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0',
+                saturation: 1,
+                hueRotate: 0
+            }
         };
     }
 
@@ -27,14 +31,25 @@ export class ColorMatrix extends FilterNode {
 
     connectedCallback() {
         super.connectedCallback();
+        this.refreshPreview();
     }
 
     render() {
-        const result = document.createElementNS('http://www.w3.org/2000/svg', 'feColorMatrix');
-        result.setAttribute('type', this.params.type);
+        const attributes = {
+            result: this.getOutputValue('result'),
+            in: this.getInputValue('in') || 'SourceGraphic',
+            type: this.params.type
+        };
+
         if (this.params.type === 'matrix') {
-            result.setAttribute('values', this.params.values);
+            attributes.values = this.params.values.matrix;
+        } else if (this.params.type === 'saturate') {
+            attributes.values = String(Number(this.params.values.saturation) || 0);
+        } else if (this.params.type === 'hueRotate') {
+            attributes.values = String(Number(this.params.values.hueRotate) || 0);
         }
+
+        const result = this.createSvg('feColorMatrix', attributes);
         return result;
     }
 
@@ -42,58 +57,62 @@ export class ColorMatrix extends FilterNode {
         const result = document.createElement('fieldset');
         result.classList.add('node-params');
 
-        const typeParam = new Params.Choice('type', 'Type', this.params.type, 
+        const typeParam = new Params.Choice('type', 'Type', this.params.type,
             ['matrix', 'saturate', 'hueRotate', 'luminanceToAlpha']);
         result.appendChild(typeParam);
 
-        // Create matrix grid container
-        const matrixContainer = document.createElement('div');
-        matrixContainer.classList.add('matrix-grid');
-        matrixContainer.style.cssText = 'display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin: 8px 0;';
+        const matrixParam = new Params.Matrix('values_matrix', 'Values', this.params.values.matrix);
+        result.appendChild(matrixParam);
 
-        // Parse current values
-        const values = this.params.values.split(/\s+/).map(v => parseFloat(v) || 0);
-        
-        // Create 4x5 matrix inputs (color matrix is 4x5)
-        for (let row = 0; row < 4; row++) {
-            for (let col = 0; col < 5; col++) {
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.step = '0.1';
-                input.value = values[row * 5 + col] || (row === col ? 1 : 0);
-                input.dataset.row = row;
-                input.dataset.col = col;
-                input.style.cssText = 'width: 50px; padding: 4px; font-size: 0.75rem;';
-                
-                input.addEventListener('input', () => {
-                    this.updateMatrixValues(matrixContainer);
-                });
-                
-                matrixContainer.appendChild(input);
+        const saturationParam = new Params.Number('values_saturation', 'Value', this.params.values.saturation, { min: 0, max: 2, step: 0.05 });
+        result.appendChild(saturationParam);
+
+        const hueRotateParam = new Params.Number('values_hueRotate', 'Value', this.params.values.hueRotate, { min: 0, max: 360, step: 1 });
+        result.appendChild(hueRotateParam);
+
+        const updateMatrixVisibility = () => {
+            matrixParam.style.display = 'none';
+            saturationParam.style.display = 'none';
+            hueRotateParam.style.display = 'none';
+            switch (this.params.type) {
+                case 'matrix':
+                    matrixParam.style.display = '';
+                    break;
+                case 'saturate':
+                    saturationParam.style.display = '';
+                    break;
+                case 'hueRotate':
+                    hueRotateParam.style.display = '';
+                    break;
             }
-        }
+        };
 
-        result.appendChild(matrixContainer);
-
-        // Add labels
-        const labelsDiv = document.createElement('div');
-        labelsDiv.style.cssText = 'font-size: 0.7rem; color: #999; margin-top: 4px;';
-        labelsDiv.innerHTML = '<div>R G B A Offset</div>';
-        result.insertBefore(labelsDiv, matrixContainer.nextSibling);
-
-        typeParam.addEventListener('change', (event) => {
-            this.params.type = event.target.value;
-            matrixContainer.style.display = event.target.value === 'matrix' ? 'grid' : 'none';
-            labelsDiv.style.display = event.target.value === 'matrix' ? 'block' : 'none';
+        typeParam.addEventListener('change', () => {
+            console.log(this.params.type);
+            
+            this.params.type = typeParam.value;
+            updateMatrixVisibility();
+            this.notifyChanged();
         });
 
-        return result;
-    }
+        matrixParam.addEventListener('input', () => {
+            this.params.values.matrix = matrixParam.value;
+            this.notifyChanged();
+        });
 
-    updateMatrixValues(container) {
-        const inputs = container.querySelectorAll('input');
-        const values = Array.from(inputs).map(input => input.value);
-        this.params.values = values.join(' ');
+        saturationParam.addEventListener('input', () => {
+            this.params.values.saturation = saturationParam.value;
+            this.notifyChanged();
+        });
+
+        hueRotateParam.addEventListener('input', () => {
+            this.params.values.hueRotate = hueRotateParam.value;
+            this.notifyChanged();
+        });
+
+        updateMatrixVisibility();
+
+        return result;
     }
 }
 

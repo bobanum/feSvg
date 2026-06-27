@@ -41,24 +41,25 @@ export class Source extends FilterNode {
     }
 
     render() {
-        console.log(123);
-        
         return document.createDocumentFragment(); // Source node does not render any filter primitive
     }
     renderPreview() {
-        // SourceAlpha n'est pas affichable seul: on le convertit en visuel blanc
-        // avec conservation de l'alpha pour un preview explicite.
-        const attributes = {
-            in: this.params.source || 'SourceGraphic',
+        const source = this.params.source || 'SourceGraphic';
+
+        if (source === 'SourceAlpha') {
+            // Rend SourceAlpha visible en blanc tout en gardant l'alpha.
+            return this.createSvg('feColorMatrix', {
+                in: 'SourceAlpha',
+                type: 'matrix',
+                values: '0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'
+            });
         }
-        const result = this.createSvg('feOffset', attributes);
-        // const result = document.createElementNS('http://www.w3.org/2000/svg', 'feColorMatrix');
-        // result.setAttribute('in', this.params.source || 'SourceGraphic');
-        // result.setAttribute('type', 'matrix');
-        // result.setAttribute('values', '0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0');
-        console.log(result);
-        
-        return result;
+
+        return this.createSvg('feOffset', {
+            in: source,
+            dx: '0',
+            dy: '0'
+        });
     }
     /**
      * Create HTML for node parameters

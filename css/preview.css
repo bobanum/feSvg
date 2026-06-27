@@ -2,9 +2,9 @@
 	display: grid;
 	/* width: 100%; */
 	box-sizing: border-box;
-	--btn-size: 2em;
+	--btn-size: 1.5em;
 	--btn-pad: 0.25em;
-	--radius: 0.25em;
+	--radius: 2px;
 }
 
 .toolbar {
@@ -27,7 +27,7 @@
 		gap: var(--btn-pad);
 	}
 
-	label {
+	label.option {
 		transition: outline-color 0.2s ease;
 		color: var(--color-text);
 		width: var(--btn-size);
@@ -51,39 +51,78 @@
 		}
 	}
 
+	label.collapse-button {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+		cursor: pointer;
 
-	.toolbar-shape-menu {
-		position: relative;
-
-		.trigger {
-			width: var(--btn-size);
-			height: var(--btn-size);
-			border-radius: var(--radius);
-			cursor: pointer;
+		&::before {
+			content: '▶';
+			display: inline-flex;
+			width: 1em;
+			height: 1em;
+			justify-content: center;
+			align-items: center;
+			line-height: 1;
+			transition: transform 0.2s ease;
 		}
 
-		fieldset {
-			gap: var(--btn-pad);
-			position: absolute;
-			right: calc(-1 * var(--btn-pad));
-			top: 100%;
-			z-index: 100;
-			padding: var(--btn-pad);
-			background: hsl(from var(--color-surface) h s l);
-			box-shadow: 0 4px 8px hsl(0 0% 0% / 0.35);
+		&:has(input[type="checkbox"]:checked) {
+			span {
+				display: none;
+			}
 
-			label {
-				background-color: #fff1;
+			&::before {
+				transform: rotate(90deg);
 			}
 		}
-
-		&:not(:focus-within) .toolbar-shape-panel {
+		&:not(:has(input[type="checkbox"]:checked)) {
+		~* {
 			display: none;
+		}}
+	}
+
+	input[type="checkbox"] {
+		display: none;
+	}
+
+	&:has(input[type="checkbox"]:checked) {
+		color: var(--color-text);
+	}
+}
+
+
+.toolbar-shape-menu {
+	position: relative;
+
+	.trigger {
+		width: var(--btn-size);
+		height: var(--btn-size);
+		border-radius: var(--radius);
+		cursor: pointer;
+	}
+
+	fieldset {
+		gap: var(--btn-pad);
+		position: absolute;
+		right: calc(-1 * var(--btn-pad));
+		top: 100%;
+		z-index: 100;
+		padding: var(--btn-pad);
+		background: hsl(from var(--color-surface) h s l);
+		box-shadow: 0 4px 8px hsl(0 0% 0% / 0.35);
+
+		label {
+			background-color: #fff1;
 		}
 	}
 
+	&:not(:focus-within) .toolbar-shape-panel {
+		display: none;
+	}
 }
-
 
 .svg {
 	width: 100%;

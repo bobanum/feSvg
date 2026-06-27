@@ -27,6 +27,7 @@ export class NodeEditor {
         // this.addNode(document.createElement('blur-filter-node'), 400, 100);
         // this.addNode(document.createElement('offset-filter-node'), 700, 100);
         // this.addNode(document.createElement('blend-filter-node'), 1000, 100);
+        this.addNode(document.createElement('colormatrix-filter-node'), 500, 100);
     }
 
     createNodeElement(type) {
@@ -103,8 +104,31 @@ export class NodeEditor {
         document.addEventListener('node-changed', (e) => {
             const node = this.nodes.get(e.detail.nodeId);
             if (node) {
-                node.refreshPreview();
+                this.handleNodeChanged(node);
             }
+        });
+    }
+
+    handleNodeChanged(node) {
+        node.refreshPreview();
+        this.propagateOutputChanges(node.id);
+    }
+
+    propagateOutputChanges(sourceNodeId, visited = new Set()) {
+        if (visited.has(sourceNodeId)) {
+            return;
+        }
+        visited.add(sourceNodeId);
+
+        this.connections.forEach((connection) => {
+            if (connection.sourceNode.id !== sourceNodeId) {
+                return;
+            }
+
+            const newValue = connection.sourceNode.getOutputValue(connection.sourcePort);
+            connection.targetNode.setInputValue(connection.targetPort, newValue);
+            connection.targetNode.refreshPreview();
+            this.propagateOutputChanges(connection.targetNode.id, visited);
         });
     }
 

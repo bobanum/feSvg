@@ -1,12 +1,19 @@
 import { Component } from "../Component.js";
 
 export class Param extends Component {
+	static formAssociated = true;
 	constructor(name, label, value) {
 		super();
 		this.internals_ = this.attachInternals();
 		this.name = name;
 		this.label = label;
 		this.value = value;
+	}
+	connectedCallback() {
+		super.connectedCallback();
+		this.internals_.setFormValue(this.value);
+		this.setAttribute('name', this.name);
+		this.setAttribute('id', this.name);
 	}
 	static dom = {
 		style: function () {

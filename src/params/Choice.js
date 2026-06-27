@@ -2,13 +2,13 @@ import { Param } from "./Param.js";
 
 export class Choice extends Param {
 	static observedAttributes = ['type'];
-	constructor(name, label, value, step = 0.1) {
+	constructor(name, label, value, choices = []) {
 		super(name, label, value);
-		this.step = step;
 		this._type = 'select';
 		this.multiple = false;
 		this.adoptFunctions({ dom: Choice.dom });
-		this.choices = [];
+		this.choices = Array.isArray(choices) ? choices : [];
+		this._boundSyncValueFromControl = this.syncValueFromControl.bind(this);
 	}
 
 	get type() {
@@ -21,13 +21,38 @@ export class Choice extends Param {
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
-		console.log(oldValue, newValue);
-
+		if (oldValue === newValue) return;
 		this[name] = newValue;
 	}
 	connectedCallback() {
 		super.connectedCallback();
-		this.appendChild(this.dom.input());
+		this.shadowRoot?.addEventListener('input', this._boundSyncValueFromControl);
+		this.shadowRoot?.addEventListener('change', this._boundSyncValueFromControl);
+	}
+
+	disconnectedCallback() {
+		this.shadowRoot?.removeEventListener('input', this._boundSyncValueFromControl);
+		this.shadowRoot?.removeEventListener('change', this._boundSyncValueFromControl);
+	}
+
+	syncValueFromControl(event) {
+		const target = event.target;
+		if (!(target instanceof HTMLInputElement || target instanceof HTMLSelectElement)) {
+			return;
+		}
+
+		if (target instanceof HTMLInputElement && target.type === 'checkbox') {
+			const selectedValues = [...this.shadowRoot.querySelectorAll('input[type="checkbox"]:checked')]
+				.map((input) => input.value);
+			this.value = selectedValues;
+			return;
+		}
+
+		if (target instanceof HTMLInputElement && target.type === 'radio' && !target.checked) {
+			return;
+		}
+
+		this.value = target.value;
 	}
 
 	static dom = {
@@ -60,6 +85,19 @@ export class Choice extends Param {
 				result.multiple = true;
 			}
 			result.dataset.param = this.name;
+			result.addEventListener('change', (e) => {
+				console.log(e);
+				
+				if (this.multiple) {
+					const selectedValues = [...result.selectedOptions].map(option => option.value);
+					this.value = selectedValues;
+				} else {
+					this.value = result.value;
+				}
+				//bubble
+				const changeEvent = new Event('change', { bubbles: true });
+				this.dispatchEvent(changeEvent);
+			});
 			return result;
 		},
 		buttons: function () {

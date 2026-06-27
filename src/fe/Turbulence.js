@@ -48,7 +48,7 @@ export class Turbulence extends FilterNode {
             ['turbulence', 'fractalNoise']);
         result.appendChild(typeParam);
 
-        const freqParam = new Params.Number('baseFrequency', 'Base Frequency', this.params.baseFrequency, 0.001);
+        const freqParam = new Params.Range('baseFrequency', 'Base Frequency', this.params.baseFrequency, 0.001);
         result.appendChild(freqParam);
 
         const octavesParam = new Params.Number('numOctaves', 'Octaves', this.params.numOctaves, 1);
