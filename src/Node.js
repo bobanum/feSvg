@@ -180,7 +180,8 @@ export class Node extends Component {
             title.textContent = this.name;
             const menuBtn = document.createElement('button');
             menuBtn.classList.add('menu-btn');
-            menuBtn.textContent = '⋮';
+            // menuBtn.textContent = '⋮';
+            menuBtn.innerHTML = '<svg viewBox="0 0 128 128" ><use xlink:href="/img/icons.svg#menu"/></svg>';
             header.appendChild(title);
             header.appendChild(menuBtn);
 

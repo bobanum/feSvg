@@ -2,11 +2,14 @@
 :host {
     --bg-color: hsl(240, 50%, 10%);
     --border-color: hsl(from var(--bg-color) h s calc(l - 5));
-    --pad: 0.25em 0.5em;
+    --pad-block: 0.25em;
+    --pad-inline: 0.5em;
+    --pad: var(--pad-block) var(--pad-inline);
     --radius: 0.5em;
     position: absolute;
     width: var(--node-width);
     width: auto;
+    min-width: 15em;
     background: var(--bg-color);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
@@ -32,10 +35,12 @@ header {
     order: -1;
     justify-content: space-between;
     align-items: center;
-    padding: var(--pad);
+    padding: 0;
+    padding-left: var(--pad-inline);
     background-color: hsl(from var(--bg-color) h s calc(l - 5));
     cursor: grab;
     user-select: none;
+    height: 2em;
     &:active {
         cursor: grabbing;
     }
@@ -52,13 +57,19 @@ header {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    padding: 0.25em;
-    font-size: 1rem;
+    font-size: 1em;
     line-height: 1;
     background: transparent;
     color: var(--color-text-muted);
-    margin-right: -0.5em;
-
+    width: 1em;
+    padding: 0;
+    align-self: stretch;
+    margin-right: var(--pad-inline);
+    svg {
+        width: 100%;
+        height: 100%;
+        fill: currentColor;
+    }
     &:hover {
         color: var(--color-text);
     }
@@ -147,14 +158,10 @@ main {
     --c1: #fff3;
     --c2: #0002;
     
-    aspect-ratio: 1 / 1;
     margin: 0.5em;
     order: 100;
     background-size: 2em 2em;
     background-position: center;
-    svg {
-        filter: url(index.html#glow);
-    }
 }
 
 ::slotted(.node-params) {

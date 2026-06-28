@@ -6,7 +6,7 @@ const PREVIEW_BACKGROUNDS = [
 	{ id: 'light', label: 'Clair', style: 'background-color: #eee;' },
 	{ id: 'dark', label: 'Sombre', style: 'background-color: #222;' },
 	{ id: 'magenta', label: 'Magenta', style: 'background-color: magenta;' },
-	{ id: 'cyan', label: 'Cyan', style: 'background-color: cyan;' },
+	// { id: 'cyan', label: 'Cyan', style: 'background-color: cyan;' },
 	{ id: 'yellow', label: 'Jaune', style: 'background-color: yellow;' },
 ];
 
@@ -119,8 +119,14 @@ export class Preview extends Component {
 			const result = document.createElement('label');
 			const checkbox = document.createElement('input');
 			checkbox.type = 'checkbox';
-			checkbox.checked = true;
 			result.appendChild(checkbox);
+			checkbox.addEventListener('change', (e) => {
+				if (e.target.checked) {
+					this.setAttribute('collapsed', '');
+				} else {
+					this.removeAttribute('collapsed');
+				}
+			});
 			const span = document.createElement('span');
 			span.textContent = 'Prévisualisation';
 			result.appendChild(span);
@@ -210,8 +216,6 @@ export class Preview extends Component {
 				panel.appendChild(label);
 			}
 			panel.addEventListener('change', (e) => {
-				console.log(e);
-
 				this.state.shape = e.target.value;
 				this.applyState();
 			});

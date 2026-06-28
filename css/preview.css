@@ -57,6 +57,7 @@
 		gap: 0.5rem;
 		font-size: 0.875rem;
 		cursor: pointer;
+		align-self: stretch;
 
 		&::before {
 			content: '▶';
@@ -69,19 +70,6 @@
 			transition: transform 0.2s ease;
 		}
 
-		&:has(input[type="checkbox"]:checked) {
-			span {
-				display: none;
-			}
-
-			&::before {
-				transform: rotate(90deg);
-			}
-		}
-		&:not(:has(input[type="checkbox"]:checked)) {
-		~* {
-			display: none;
-		}}
 	}
 
 	input[type="checkbox"] {
@@ -93,6 +81,25 @@
 	}
 }
 
+:host(:not([collapsed])) {
+	.collapse-button span {
+		display: none;
+	}
+	.collapse-button::before {
+		transform: rotate(90deg);
+	}
+}
+
+:host([collapsed]) {
+	.svg {
+		display: none;
+	}
+
+	.toolbar>.collapse-button~* {
+		display: none;
+	}
+
+}
 
 .toolbar-shape-menu {
 	position: relative;
